@@ -1,96 +1,53 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { UserProfile } from '../types';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { User } from '@supabase/supabase-js';
+import { supabase } from '../services/supabaseClient';
 
+// 1. Define the shape of our Context
 interface AuthContextType {
-  user: UserProfile | null;
-  isLoading: boolean;
-  signIn: (email: string) => Promise<void>;
-  signOut: () => void;
-  updateProfile: (updates: Partial<UserProfile>) => void;
-  setTheme: (theme: 'light' | 'dark' | 'system') => void;
+  user: User | null;
+  loading: boolean;
+  signOut: () => Promise<void>;
 }
 
+// 2. Create the Context
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<UserProfile | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+// 3. Create the Provider Component
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check local storage for persisted session
-    const storedUser = localStorage.getItem('lyloo_user');
-    if (storedUser) {
-      const parsedUser = JSON.parse(storedUser);
-      setUser(parsedUser);
-      applyTheme(parsedUser.theme || 'light');
-    } else {
-      applyTheme('light');
-    }
-    setIsLoading(false);
+    // Check for an active session when the app first loads
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
+
+    // Listen for real-time login/logout events
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
+
+    // Clean up the listener when the component unmounts
+    return () => subscription.unsubscribe();
   }, []);
 
-  const applyTheme = (theme: 'light' | 'dark' | 'system') => {
-    const root = window.document.documentElement;
-    const isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
-    
-    if (isDark) {
-      root.classList.add('dark');
-    } else {
-      root.classList.remove('dark');
-    }
-  };
-
-  const signIn = async (email: string) => {
-    setIsLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 800));
-    
-    const mockUser: UserProfile = {
-      id: 'user_123',
-      email,
-      first_name: 'Julie',
-      last_name: 'Dupont',
-      avatar_url: 'https://picsum.photos/200/200?random=99',
-      role: 'admin', // DEFAULTING TO ADMIN FOR DEVELOPMENT
-      objectifs: [],
-      tempsParJourMinutes: 15,
-      notifications: { matin: false, midi: false, soir: false },
-      theme: 'light'
-    };
-    
-    setUser(mockUser);
-    localStorage.setItem('lyloo_user', JSON.stringify(mockUser));
-    applyTheme(mockUser.theme);
-    setIsLoading(false);
-  };
-
-  const signOut = () => {
-    setUser(null);
-    localStorage.removeItem('lyloo_user');
-    applyTheme('light');
-  };
-
-  const updateProfile = (updates: Partial<UserProfile>) => {
-    if (user) {
-      const updatedUser = { ...user, ...updates };
-      setUser(updatedUser);
-      localStorage.setItem('lyloo_user', JSON.stringify(updatedUser));
-      if (updates.theme) {
-        applyTheme(updates.theme);
-      }
-    }
-  };
-
-  const setTheme = (theme: 'light' | 'dark' | 'system') => {
-    updateProfile({ theme });
+  // Helper function to handle logouts
+  const signOut = async () => {
+    await supabase.auth.signOut();
   };
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, signIn, signOut, updateProfile, setTheme }}>
-      {children}
+    <AuthContext.Provider value={{ user, loading, signOut }}>
+      {/* Only render the app once we know if the user is logged in or not */}
+      {!loading && children}
     </AuthContext.Provider>
   );
 };
 
+// 4. Create a simple Hook to use this context anywhere in the app
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
