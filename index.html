@@ -1,0 +1,100 @@
+
+<!DOCTYPE html>
+<html lang="en" class="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>Maquette Lyloo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Quicksand:wght@500;700&family=Chewy&display=swap" rel="stylesheet">
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Atkinson Hyperlegible', 'sans-serif'],
+              secondary: ['Ekamai', 'Quicksand', 'sans-serif'], // Ekamai preferred, Quicksand fallback
+              playful: ['Chewy', 'cursive'], // New playful font for subtitles
+            },
+            colors: {
+              lyloo: {
+                anthracite: '#373a37',
+                beige: '#f5f2e6',
+                vertEau: '#a5cdbc',
+                vertPale: '#cce1b0',
+                terracotta: '#ec9b7b',
+                dore: '#f5e380',
+                orange: '#e94a38',
+                marron: '#615245',
+                
+                // Dark mode variants (muted)
+                dark: {
+                  bg: '#373a37',
+                  text: '#f5f2e6',
+                  vertEau: '#93b7a8',
+                  vertPale: '#b7ca9f',
+                  terracotta: '#cd9a7f',
+                  dore: '#e2d277',
+                  orange: '#cc674d',
+                }
+              }
+            },
+            borderRadius: {
+              'xl': '12px',
+              '2xl': '16px',
+              '3xl': '24px',
+              '4xl': '32px',
+            },
+            backgroundImage: {
+               'lyloo-gradient': 'linear-gradient(to right, #a5cdbc, #cce1b0)',
+               'lyloo-gradient-dark': 'linear-gradient(to right, #93b7a8, #b7ca9f)',
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      body {
+        background-color: #f5f2e6; /* Lyloo Beige */
+        color: #373a37; /* Lyloo Anthracite */
+        -webkit-font-smoothing: antialiased;
+      }
+      
+      .dark body {
+        background-color: #373a37;
+        color: #f5f2e6;
+      }
+
+      /* Hide scrollbar for clean mobile look */
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.555.0",
+    "recharts": "https://aistudiocdn.com/recharts@^3.5.1",
+    "date-fns": "https://aistudiocdn.com/date-fns@^4.1.0",
+    "react-router-dom": "https://aistudiocdn.com/react-router-dom@^7.9.6",
+    "@google/genai": "https://esm.run/@google/genai",
+    "date-fns/": "https://aistudiocdn.com/date-fns@^4.1.0/",
+    "react-dom-confetti": "https://aistudiocdn.com/react-dom-confetti@^0.2.0"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body>
+    <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>
