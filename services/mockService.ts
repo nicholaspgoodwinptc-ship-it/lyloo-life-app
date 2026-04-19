@@ -1,4 +1,5 @@
 import { Activity, MoodEntry, QuoteOfTheDay, CommunityPost, Session, Product, Challenge, Notification, Comment } from '../types';
+import { supabase } from './supabaseClient';
 
 export let MOCK_ACTIVITIES: Activity[] = [
   {
@@ -1018,7 +1019,26 @@ export let MOCK_POSTS: CommunityPost[] = [
 
 
 export const MockService = {
-  getActivities: async () => MOCK_ACTIVITIES,
+  getActivities: async (): Promise<Activity[]> => {
+    const { data, error } = await supabase
+      .from('activities')
+      .select('*');
+
+    if (error) {
+      console.error('Erreur Supabase:', error.message);
+      return [];
+    }
+
+    const formattedData = data.map((item) => ({
+      ...item,
+      dureeMinutes: item.duree_minutes,
+      contentUrl: item.content_url,
+      imageUrl: item.image_url, // Added this!
+      couleurPrincipale: item.couleur_principale
+    }));
+
+    return formattedData as Activity[];
+  },
   saveActivity: async (activity: Activity) => {
     const index = MOCK_ACTIVITIES.findIndex(a => a.id === activity.id);
     if (index >= 0) MOCK_ACTIVITIES[index] = activity;
@@ -1046,33 +1066,33 @@ export const MockService = {
 
   getPosts: async () => MOCK_POSTS,
   addPost: async (post: Partial<CommunityPost>) => {
-      const newPost: CommunityPost = {
-          id: Math.random().toString(36).substr(2, 9),
-          author: post.author || 'Moi',
-          content: post.content || '',
-          type: post.type || 'message',
-          likes: 0,
-          date: new Date().toISOString(),
-          comments: [],
-          reactions: {}
-      };
-      MOCK_POSTS.unshift(newPost);
+    const newPost: CommunityPost = {
+      id: Math.random().toString(36).substr(2, 9),
+      author: post.author || 'Moi',
+      content: post.content || '',
+      type: post.type || 'message',
+      likes: 0,
+      date: new Date().toISOString(),
+      comments: [],
+      reactions: {}
+    };
+    MOCK_POSTS.unshift(newPost);
   },
   reactToPost: async (id: string, reaction: string) => {
-      const post = MOCK_POSTS.find(p => p.id === id);
-      if (post) {
-          if (!post.reactions) post.reactions = {};
-          if (post.userReaction === reaction) {
-             post.reactions[reaction] = Math.max(0, (post.reactions[reaction] || 1) - 1);
-             post.userReaction = null;
-          } else {
-             if(post.userReaction && post.reactions[post.userReaction]) {
-                 post.reactions[post.userReaction]--;
-             }
-             post.reactions[reaction] = (post.reactions[reaction] || 0) + 1;
-             post.userReaction = reaction;
-          }
+    const post = MOCK_POSTS.find(p => p.id === id);
+    if (post) {
+      if (!post.reactions) post.reactions = {};
+      if (post.userReaction === reaction) {
+        post.reactions[reaction] = Math.max(0, (post.reactions[reaction] || 1) - 1);
+        post.userReaction = null;
+      } else {
+        if (post.userReaction && post.reactions[post.userReaction]) {
+          post.reactions[post.userReaction]--;
+        }
+        post.reactions[reaction] = (post.reactions[reaction] || 0) + 1;
+        post.userReaction = reaction;
       }
+    }
   },
 
   getChallenges: async () => MOCK_CHALLENGES,
