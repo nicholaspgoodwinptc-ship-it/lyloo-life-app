@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Activity } from '../types';
 import { X, Clock, Target, Heart, Play, BookOpen, Utensils, Sparkles, Share2, StopCircle, CheckCircle, Copy, ArrowRight, List, Info, Video } from 'lucide-react';
@@ -33,7 +32,6 @@ export const ActivityDetail: React.FC<ActivityDetailProps> = ({ activity, onClos
   const [isCompleted, setIsCompleted] = useState(false);
   const [favAnimate, setFavAnimate] = useState(false);
   
-  // Suggestion state
   const [relatedActivities, setRelatedActivities] = useState<Activity[]>([]);
   const [nextActivity, setNextActivity] = useState<Activity | null>(null);
 
@@ -43,7 +41,6 @@ export const ActivityDetail: React.FC<ActivityDetailProps> = ({ activity, onClos
     setIsActive(false);
     setTimeLeft(activity.dureeMinutes * 60);
     
-    // Load related activities
     MockService.getActivities().then(all => {
         const related = all
             .filter(a => 
@@ -54,32 +51,23 @@ export const ActivityDetail: React.FC<ActivityDetailProps> = ({ activity, onClos
             .slice(0, 5);
         setRelatedActivities(related);
     });
-
   }, [activity]);
 
   const toggleFavorite = async () => {
     const newState = !isFavorite;
     setIsFavorite(newState);
     setFavAnimate(true);
-    setTimeout(() => setFavAnimate(false), 500); // Reset animation
+    setTimeout(() => setFavAnimate(false), 500);
     await MockService.toggleFavorite(activity.id);
   };
 
   const handleShare = async () => {
     const text = `Découvre "${activity.titre}" sur Lyloo !`;
     const shareUrl = window.location.href.startsWith('http') ? window.location.href : 'https://lyloo.app';
-    const shareData = {
-        title: activity.titre,
-        text: text,
-        url: shareUrl,
-    };
+    const shareData = { title: activity.titre, text: text, url: shareUrl };
 
     if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
-      try {
-        await navigator.share(shareData);
-      } catch (error) {
-        console.log("Share skipped or cancelled", error);
-      }
+      try { await navigator.share(shareData); } catch (error) { console.log("Share skipped", error); }
     } else {
       try {
           await navigator.clipboard.writeText(`${text} ${shareUrl}`);
@@ -95,28 +83,60 @@ export const ActivityDetail: React.FC<ActivityDetailProps> = ({ activity, onClos
     setIsActive(true);
   };
 
-  const stopSession = () => {
+  // === MISE À JOUR 1 : Arrêt prématuré de la session ===
+  const stopSession = async () => {
     setIsActive(false);
     setSessionMode(false);
+    
+    // Calcule le temps réellement passé (en minutes)
+    const durationSpent = Math.round((activity.dureeMinutes * 60 - timeLeft) / 60);
+    
+    // Sauvegarde en base de données avec le statut "interrompue"
+    await MockService.saveSession({ 
+        activityId: activity.id, 
+        duration: durationSpent, 
+        statut: 'interrompue' 
+    });
+    
     setTimeLeft(activity.dureeMinutes * 60);
   };
 
-  const markAsComplete = () => {
+  // === MISE À JOUR 2 : Bouton "Marquer comme terminé" ===
+  const markAsComplete = async () => {
       setIsCompleted(true);
+      // Sauvegarde instantanée en base de données
+      await MockService.saveSession({ 
+          activityId: activity.id, 
+          duration: activity.dureeMinutes, 
+          statut: 'terminee' 
+      });
       setTimeout(() => setIsCompleted(false), 3000);
   };
 
+  // === MISE À JOUR 3 : Fin automatique du minuteur ===
   useEffect(() => {
     let interval: any = null;
     if (isActive && timeLeft > 0) {
       interval = setInterval(() => {
         setTimeLeft(time => time - 1);
       }, 1000);
-    } else if (timeLeft === 0) {
+    } else if (isActive && timeLeft === 0) {
+      // Le minuteur est arrivé à 0 !
       setIsActive(false);
+      setSessionMode(false);
+      setIsCompleted(true); // Déclenche les confettis
+      
+      // Sauvegarde automatique
+      MockService.saveSession({ 
+          activityId: activity.id, 
+          duration: activity.dureeMinutes, 
+          statut: 'terminee' 
+      });
+      
+      setTimeout(() => setIsCompleted(false), 3000);
     }
     return () => clearInterval(interval);
-  }, [isActive, timeLeft]);
+  }, [isActive, timeLeft, activity]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -184,7 +204,6 @@ export const ActivityDetail: React.FC<ActivityDetailProps> = ({ activity, onClos
             <WellnessCardImage src={activity.imageUrl} alt={activity.titre} category={activity.categorie} className="w-full h-full" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
             
-            {/* Play Button Overlay if Video */}
             {activity.contentUrl && (
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                     <div className="w-16 h-16 bg-white/30 backdrop-blur-sm rounded-full flex items-center justify-center text-white animate-pulse">
@@ -221,7 +240,6 @@ export const ActivityDetail: React.FC<ActivityDetailProps> = ({ activity, onClos
                 )}
             </div>
 
-            {/* Video Action if present */}
             {activity.contentUrl && (
                 <a href={activity.contentUrl} target="_blank" rel="noopener noreferrer" className="block w-full">
                     <Button className="w-full bg-red-500 hover:bg-red-600 text-white shadow-md">
@@ -230,7 +248,6 @@ export const ActivityDetail: React.FC<ActivityDetailProps> = ({ activity, onClos
                 </a>
             )}
 
-            {/* About This Activity */}
             <div className="space-y-2">
                 <h3 className="font-bold text-lyloo-anthracite dark:text-lyloo-beige flex items-center gap-2 text-lg">
                     <Info size={20} /> À propos de cette activité
@@ -240,7 +257,6 @@ export const ActivityDetail: React.FC<ActivityDetailProps> = ({ activity, onClos
                 </p>
             </div>
 
-            {/* Why this helps section */}
             <div className="bg-lyloo-vertPale/20 dark:bg-lyloo-dark-vertPale/10 p-5 rounded-2xl border border-lyloo-vertPale/30">
                 <h3 className="font-bold text-lyloo-anthracite dark:text-lyloo-beige flex items-center gap-2 mb-3">
                     <Sparkles size={18} /> Pourquoi ceci aide ?
@@ -257,7 +273,6 @@ export const ActivityDetail: React.FC<ActivityDetailProps> = ({ activity, onClos
                 )}
             </div>
 
-            {/* Ingredients */}
             {activity.ingredients && activity.ingredients.length > 0 && (
                 <div className="bg-orange-50 dark:bg-orange-900/10 p-5 rounded-2xl border border-orange-100 dark:border-orange-900/30">
                     <h3 className="font-bold text-lyloo-orange mb-3 flex items-center gap-2"><Utensils size={18} /> Ingrédients</h3>
@@ -272,7 +287,6 @@ export const ActivityDetail: React.FC<ActivityDetailProps> = ({ activity, onClos
                 </div>
             )}
 
-            {/* Instructions */}
             {activity.instructions && activity.instructions.length > 0 && (
                 <div className="space-y-4 pt-2">
                     <h3 className="font-bold text-lyloo-anthracite dark:text-lyloo-beige flex items-center gap-2 text-lg"><BookOpen size={20} /> Instructions</h3>
@@ -287,7 +301,6 @@ export const ActivityDetail: React.FC<ActivityDetailProps> = ({ activity, onClos
                 </div>
             )}
 
-            {/* Related Activities Section - Horizontal Scroll Fixed */}
             {relatedActivities.length > 0 && (
                  <div className="pt-6 border-t border-stone-100 dark:border-stone-700">
                     <h3 className="font-bold text-lyloo-anthracite dark:text-lyloo-beige mb-4 text-sm">Cela pourrait vous plaire</h3>

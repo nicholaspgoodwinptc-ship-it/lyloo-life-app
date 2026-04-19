@@ -11,31 +11,6 @@ import {
 } from "../types";
 import { supabase } from "./supabaseClient";
 
-export let MOCK_SESSIONS: Session[] = [
-  {
-    id: "s1",
-    activityId: "m1",
-    date: new Date().toISOString(),
-    duration: 0,
-    moodBefore: "",
-    moodAfter: "",
-    note: "",
-    userId: "user_123",
-    statut: "terminee",
-  },
-  {
-    id: "s2",
-    activityId: "p1",
-    date: new Date().toISOString(),
-    duration: 0,
-    moodBefore: "",
-    moodAfter: "",
-    note: "",
-    userId: "user_123",
-    statut: "terminee",
-  },
-];
-
 export let MOCK_NOTIFICATIONS: Notification[] = [
   {
     id: "n1",
@@ -46,10 +21,7 @@ export let MOCK_NOTIFICATIONS: Notification[] = [
     title: "Notification système",
   },
 ];
-
-export let MOCK_MOOD_HISTORY: MoodEntry[] = [];
 export let MOCK_QUOTES: QuoteOfTheDay[] = [];
-
 export let MOCK_POSTS: CommunityPost[] = [
   {
     id: "1",
@@ -65,23 +37,31 @@ export let MOCK_POSTS: CommunityPost[] = [
 
 export const MockService = {
   // ==========================================
-  // LOGIQUE SUPABASE (DONNÉES RÉELLES)
+  // LECTURE DES DONNÉES PUBLIQUES
   // ==========================================
 
   getActivities: async (): Promise<Activity[]> => {
-    const { data, error } = await supabase.from("activities").select("*");
-    if (error) {
-      console.error("Erreur Supabase (Activités):", error.message);
-      return [];
+    const { data: activities, error } = await supabase.from("activities")
+      .select("*");
+    if (error) return [];
+
+    const { data: { user } } = await supabase.auth.getUser();
+    let favoritedIds = new Set<string>();
+
+    if (user) {
+      const { data: favorites } = await supabase.from("favorites").select(
+        "activity_id",
+      );
+      if (favorites) favorites.forEach((f) => favoritedIds.add(f.activity_id));
     }
 
-    // PROTECTION ANTI-CRASH : On garantit un tableau (|| []) et on force les types
-    return (data || []).map((item) => ({
+    return (activities || []).map((item) => ({
       ...item,
       dureeMinutes: Number(item.duree_minutes) || 0,
       contentUrl: item.content_url || "",
       imageUrl: item.image_url || "",
       couleurPrincipale: item.couleur_principale || "",
+      estFavori: favoritedIds.has(item.id),
       ingredients: [],
       instructions: [],
     })) as Activity[];
@@ -89,16 +69,7 @@ export const MockService = {
 
   getProducts: async (): Promise<Product[]> => {
     const { data, error } = await supabase.from("products").select("*");
-
-    // ADD THIS TRACE LINE:
-    console.log("Trace Supabase Produits:", data, "Erreur:", error);
-
-    if (error) {
-      console.error("Erreur Supabase (Produits):", error.message);
-      return [];
-    }
-
-    // PROTECTION ANTI-CRASH : On force "price" à être un nombre pour éviter les erreurs .toFixed()
+    if (error) return [];
     return (data || []).map((item) => ({
       id: item.id || Math.random().toString(),
       name: item.name || "Produit",
@@ -111,12 +82,7 @@ export const MockService = {
 
   getChallenges: async (): Promise<Challenge[]> => {
     const { data, error } = await supabase.from("challenges").select("*");
-    if (error) {
-      console.error("Erreur Supabase (Challenges):", error.message);
-      return [];
-    }
-
-    // PROTECTION ANTI-CRASH : On force "durationDays" et "participants" à être des nombres
+    if (error) return [];
     return (data || []).map((item) => ({
       id: item.id || Math.random().toString(),
       title: item.title || "Challenge",
@@ -130,39 +96,118 @@ export const MockService = {
   },
 
   // ==========================================
-  // MODE LECTURE SEULE
+  // ACTIONS PERSONNALISÉES (Favoris, Sessions, Humeur)
   // ==========================================
-  saveActivity: async (activity: Activity) =>
-    console.warn("Lecture seule activée."),
-  deleteActivity: async (id: string) => console.warn("Lecture seule activée."),
-  saveProduct: async (product: Product) =>
-    console.warn("Lecture seule activée."),
-  deleteProduct: async (id: string) => console.warn("Lecture seule activée."),
-  toggleFavorite: async (id: string) => console.log("Favoris non implémentés."),
+
+  toggleFavorite: async (activityId: string) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data } = await supabase.from("favorites").select("id").eq(
+      "activity_id",
+      activityId,
+    ).single();
+
+    if (data) {
+      await supabase.from("favorites").delete().eq("id", data.id);
+    } else {
+      await supabase.from("favorites").insert([{
+        user_id: user.id,
+        activity_id: activityId,
+      }]);
+    }
+  },
+
+  // ---- LECTURE ET ÉCRITURE DES SESSIONS ----
+
+  getSessions: async (): Promise<Session[]> => {
+    const { data, error } = await supabase.from("sessions").select("*").order(
+      "created_at",
+      { ascending: false },
+    );
+    if (error) return [];
+    return (data || []).map((s) => ({
+      id: s.id,
+      activityId: s.activity_id,
+      date: s.created_at,
+      duration: s.duration_minutes,
+      moodBefore: s.mood_before || "",
+      moodAfter: s.mood_after || "",
+      note: s.note || "",
+      userId: s.user_id,
+      statut: s.statut || "terminee",
+    })) as Session[];
+  },
+
+  saveSession: async (sessionData: Partial<Session>) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { error } = await supabase.from("sessions").insert([{
+      user_id: user.id,
+      activity_id: sessionData.activityId,
+      duration_minutes: sessionData.duration || 0,
+      mood_before: sessionData.moodBefore || null,
+      mood_after: sessionData.moodAfter || null,
+      note: sessionData.note || null,
+      statut: sessionData.statut || "terminee",
+    }]);
+
+    if (error) {
+      console.error(
+        "Erreur lors de l'enregistrement de la session:",
+        error.message,
+      );
+    }
+  },
+
+  // ---- LECTURE ET ÉCRITURE DE L'HUMEUR ----
+
+  getMoodHistory: async (): Promise<MoodEntry[]> => {
+    const { data, error } = await supabase.from("mood_history").select("*")
+      .order("created_at", { ascending: false });
+    if (error) return [];
+    return (data || []).map((m) => ({
+      id: m.id,
+      date: m.created_at,
+      mood: m.mood,
+      note: m.note || "",
+    })) as any[];
+  },
+
+  addMoodEntry: async (entry: Partial<MoodEntry>) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { error } = await supabase.from("mood_history").insert([{
+      user_id: user.id,
+      mood: entry.mood || "neutre",
+      note: entry.note || null,
+    }]);
+
+    if (error) {
+      console.error(
+        "Erreur lors de l'enregistrement de l'humeur:",
+        error.message,
+      );
+    }
+  },
+
+  // ==========================================
+  // MODE LECTURE SEULE (Admin/Google Sheets)
+  // ==========================================
+  saveActivity: async () => console.warn("Lecture seule activée."),
+  deleteActivity: async () => console.warn("Lecture seule activée."),
+  saveProduct: async () => console.warn("Lecture seule activée."),
+  deleteProduct: async () => console.warn("Lecture seule activée."),
 
   // ==========================================
   // DONNÉES TEMPORAIRES (POSTS)
   // ==========================================
   getPosts: async () => MOCK_POSTS,
-  addPost: async (post: Partial<CommunityPost>) => {
-    MOCK_POSTS.unshift({
-      id: Math.random().toString(36).substr(2, 9),
-      author: post.author || "Moi",
-      content: post.content || "",
-      type: post.type || "message",
-      likes: 0,
-      date: new Date().toISOString(),
-      comments: [],
-      reactions: {},
-    });
-  },
-  reactToPost: async (
-    id: string,
-    reaction: string,
-  ) => {/* Gardé simple pour l'espace */},
-  getSessions: async () => MOCK_SESSIONS,
+  addPost: async () => {/* Gardé simple pour l'espace */},
+  reactToPost: async () => {/* Gardé simple pour l'espace */},
   getNotifications: async () => MOCK_NOTIFICATIONS,
-  getMoodHistory: async () => MOCK_MOOD_HISTORY,
   getQuoteOfTheDay: (): QuoteOfTheDay =>
     MOCK_QUOTES[0] || { id: "0", texte: "Respirez.", auteur: "Lyloo" },
   getComments: async () => [],

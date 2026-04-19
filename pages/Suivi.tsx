@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { WaveHeader, Card, WellnessCardImage, Skeleton, SuiviIcon } from '../components/ui/LayoutComponents';
 import { useNavigate } from 'react-router-dom';
@@ -10,14 +9,15 @@ import { Session, Activity } from '../types';
 const Suivi: React.FC = () => {
   const navigate = useNavigate();
   const [selectedMood, setSelectedMood] = useState<number | null>(null);
+  const [moodNote, setMoodNote] = useState('');
+  const [isSavingMood, setIsSavingMood] = useState(false);
+  
   const [sessions, setSessions] = useState<Session[]>([]);
   const [activities, setActivities] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(true);
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    // Delay setting isMounted to ensure the Flexbox layout has finished painting.
-    // This prevents the "width(-1)" error in Recharts.
     const timer = setTimeout(() => {
       setIsMounted(true);
     }, 100);
@@ -33,21 +33,17 @@ const Suivi: React.FC = () => {
 
   const getSessionActivity = (activityId: string) => activities.find(a => a.id === activityId);
 
-  // Mock stats logic
   const totalMinutes = sessions.reduce((acc, curr) => {
       const act = getSessionActivity(curr.activityId);
       return acc + (act ? act.dureeMinutes : 0);
   }, 0);
   
-  const streak = 3; // Mock streak
+  const streak = 3;
 
-  // Generate Mood Calendar Data (Mock 30 days)
   const today = new Date();
   const calendarDays = Array.from({ length: 30 }, (_, i) => {
       const d = new Date(today);
       d.setDate(d.getDate() - (29 - i));
-      
-      // Random mock mood for some days
       const hasMood = Math.random() > 0.6;
       const moodLevel = hasMood ? Math.floor(Math.random() * 5) + 1 : null;
       return { date: d, mood: moodLevel };
@@ -61,13 +57,8 @@ const Suivi: React.FC = () => {
   };
 
   const weeklyData = [
-    { day: 'L', count: 2 },
-    { day: 'M', count: 1 },
-    { day: 'M', count: 3 },
-    { day: 'J', count: 0 },
-    { day: 'V', count: 2 },
-    { day: 'S', count: 4 },
-    { day: 'D', count: 1 },
+    { day: 'L', count: 2 }, { day: 'M', count: 1 }, { day: 'M', count: 3 },
+    { day: 'J', count: 0 }, { day: 'V', count: 2 }, { day: 'S', count: 4 }, { day: 'D', count: 1 },
   ];
 
   const balanceData = [
@@ -80,6 +71,24 @@ const Suivi: React.FC = () => {
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
     .slice(0, 3);
 
+  // === NOUVELLE FONCTION DE SAUVEGARDE ===
+  const handleSaveMood = async () => {
+    if (!selectedMood) return;
+    setIsSavingMood(true);
+    
+    // Traduction du numéro en texte pour la base de données
+    const moodNames = ['très mauvais', 'mauvais', 'neutre', 'bien', 'super'];
+    const moodName = moodNames[selectedMood - 1];
+    
+    await MockService.addMoodEntry({ mood: moodName, note: moodNote });
+    
+    // Réinitialisation de l'interface après sauvegarde
+    setSelectedMood(null);
+    setMoodNote('');
+    setIsSavingMood(false);
+    alert("Votre humeur a été enregistrée avec succès !");
+  };
+
   return (
     <div className="min-h-screen bg-lyloo-beige dark:bg-lyloo-dark-bg pb-40">
       <WaveHeader 
@@ -91,7 +100,6 @@ const Suivi: React.FC = () => {
 
       <div className="px-4 space-y-6 pt-60 md:pt-72 relative z-20 max-w-5xl mx-auto w-full">
           
-          {/* Weekly Summary Stats */}
           <div className="grid grid-cols-2 gap-4">
               <div className="bg-white dark:bg-stone-800 p-4 rounded-[24px] shadow-sm flex flex-col items-center justify-center text-center">
                   <div className="w-10 h-10 rounded-full bg-orange-100 text-orange-500 flex items-center justify-center mb-2">
@@ -109,8 +117,8 @@ const Suivi: React.FC = () => {
               </div>
           </div>
 
-          {/* Mood Tracker Input (Moved Up) */}
-          <Card className="text-center py-6">
+          {/* === MOOD TRACKER UPDATED === */}
+          <Card className="text-center py-6 animate-in fade-in duration-500">
               <h3 className="font-bold text-lyloo-anthracite dark:text-lyloo-beige mb-4">Comment te sens-tu aujourd'hui ?</h3>
               <div className="flex justify-center gap-4 mb-4">
                   {[1, 2, 3, 4, 5].map((level) => (
@@ -124,14 +132,26 @@ const Suivi: React.FC = () => {
                   ))}
               </div>
               <textarea 
-                placeholder="Quelques mots sur ta journée..." 
-                className="w-full bg-stone-50 dark:bg-stone-900 rounded-xl p-3 text-sm border-none focus:ring-1 focus:ring-lyloo-vertEau outline-none resize-none h-20 dark:text-white"
+                value={moodNote}
+                onChange={(e) => setMoodNote(e.target.value)}
+                placeholder="Quelques mots sur ta journée (optionnel)..." 
+                className="w-full bg-stone-50 dark:bg-stone-900 rounded-xl p-3 text-sm border-none focus:ring-2 focus:ring-lyloo-vertEau outline-none resize-none h-20 dark:text-white transition-all"
               />
+              
+              {selectedMood && (
+                  <div className="mt-4 flex justify-end animate-in fade-in slide-in-from-top-2">
+                      <button 
+                          onClick={handleSaveMood}
+                          disabled={isSavingMood}
+                          className="bg-lyloo-anthracite hover:bg-lyloo-anthracite/90 text-lyloo-beige px-6 py-2 rounded-full font-bold text-sm shadow-md transition-all disabled:opacity-50"
+                      >
+                          {isSavingMood ? 'Enregistrement...' : 'Enregistrer'}
+                      </button>
+                  </div>
+              )}
           </Card>
 
-          {/* Mood Charts & Recent Activities Wrapper */}
           <div className="space-y-6">
-              {/* Mood History Calendar */}
               <Card>
                   <h3 className="font-bold text-lyloo-anthracite dark:text-lyloo-beige mb-4 text-sm flex items-center gap-2">
                       <Smile size={16} /> Historique d'humeur (30 jours)
@@ -153,7 +173,6 @@ const Suivi: React.FC = () => {
                   </div>
               </Card>
 
-              {/* Dernières activités complétées */}
               <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
                   <h3 className="font-bold text-lyloo-anthracite dark:text-lyloo-beige mb-3 flex items-center gap-2">
                       <History size={18} className="text-lyloo-vertEau" /> Dernières activités complétées
@@ -189,9 +208,7 @@ const Suivi: React.FC = () => {
               </div>
           </div>
 
-          {/* Charts Row */}
           <div className="flex flex-col md:flex-row gap-4">
-               {/* Rhythm Chart */}
                <Card className="flex-1 min-w-[280px]">
                   <h3 className="font-bold text-lyloo-anthracite dark:text-lyloo-beige mb-3 text-sm">Mon rythme (7 jours)</h3>
                   <div className="h-[200px] w-full relative">
@@ -213,7 +230,6 @@ const Suivi: React.FC = () => {
                   </div>
               </Card>
 
-              {/* Balance Chart */}
               <Card className="flex-1 min-w-[280px] flex items-center gap-4">
                    <div className="h-[200px] w-1/2 relative flex-shrink-0">
                         {isMounted ? (
