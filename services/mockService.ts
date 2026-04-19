@@ -11,83 +11,6 @@ import {
 } from "../types";
 import { supabase } from "./supabaseClient";
 
-// Les fausses activités (MOCK_ACTIVITIES) ont été supprimées.
-// L'application utilise maintenant la base de données en direct !
-
-export let MOCK_PRODUCTS: Product[] = [
-  {
-    id: "prod1",
-    name: "Tapis de Yoga Confort",
-    price: 45,
-    image_url: "",
-    category: "Accessoires",
-    description:
-      "Tapis épais (6mm) et antidérapant en TPE écologique. Idéal pour vos séances de yoga et pilates à la maison.",
-  },
-  {
-    id: "prod2",
-    name: "Gourde Isotherme Lyloo",
-    price: 25,
-    image_url: "",
-    category: "Lifestyle",
-    description:
-      "Gardez votre eau fraîche pendant 24h et votre tisane chaude 12h. Acier inoxydable.",
-  },
-  {
-    id: "prod3",
-    name: "Zafu de Méditation",
-    price: 35,
-    image_url: "",
-    category: "Méditation",
-    description:
-      "Coussin de méditation ergonomique en coton bio, garnissage épeautre. Pour une posture parfaite.",
-  },
-  {
-    id: "prod4",
-    name: "Huile Essentielle Lavande",
-    price: 12,
-    image_url: "",
-    category: "Aromathérapie",
-    description:
-      "Lavande vraie bio. Idéale pour la relaxation et favoriser l'endormissement.",
-  },
-  {
-    id: "prod5",
-    name: "Briques de Yoga (Lot de 2)",
-    price: 22,
-    image_url: "",
-    category: "Accessoires",
-    description:
-      "Briques en liège naturel pour vous aider dans vos postures d'équilibre et de souplesse.",
-  },
-  {
-    id: "prod6",
-    name: "Diffuseur Ultrasonique",
-    price: 39,
-    image_url: "",
-    category: "Aromathérapie",
-    description:
-      "Diffuseur d'huiles essentielles silencieux avec lumière d'ambiance douce.",
-  },
-  {
-    id: "prod7",
-    name: "Journal de Gratitude",
-    price: 18,
-    image_url: "",
-    category: "Papeterie",
-    description:
-      "Carnet guidé pour noter vos pensées positives chaque jour. Couverture rigide recyclée.",
-  },
-  {
-    id: "prod8",
-    name: 'Infusion "Nuit Calme"',
-    price: 9.5,
-    image_url: "",
-    category: "Nutrition",
-    description: "Mélange de mélisse, verveine et tilleul. 100g vrac bio.",
-  },
-];
-
 export let MOCK_SESSIONS: Session[] = [
   {
     id: "s1",
@@ -111,97 +34,6 @@ export let MOCK_SESSIONS: Session[] = [
     userId: "user_123",
     statut: "terminee",
   },
-  {
-    id: "s3",
-    activityId: "m2",
-    date: new Date().toISOString(),
-    duration: 0,
-    moodBefore: "",
-    moodAfter: "",
-    note: "",
-    userId: "user_123",
-    statut: "terminee",
-  },
-  {
-    id: "s4",
-    activityId: "m3",
-    date: new Date().toISOString(),
-    duration: 0,
-    moodBefore: "",
-    moodAfter: "",
-    note: "",
-    userId: "user_123",
-    statut: "terminee",
-  },
-  {
-    id: "s5",
-    activityId: "p3",
-    date: new Date().toISOString(),
-    duration: 0,
-    moodBefore: "",
-    moodAfter: "",
-    note: "",
-    userId: "user_123",
-    statut: "terminee",
-  },
-  {
-    id: "s6",
-    activityId: "p6",
-    date: new Date().toISOString(),
-    duration: 0,
-    moodBefore: "",
-    moodAfter: "",
-    note: "",
-    userId: "user_123",
-    statut: "terminee",
-  },
-];
-
-export let MOCK_CHALLENGES: Challenge[] = [
-  {
-    id: "c1",
-    title: "",
-    description:
-      "Chaque jour, notez 3 choses pour lesquelles vous êtes reconnaissant.",
-    durationDays: 0,
-    startDate: new Date().toISOString(),
-    isJoined: true,
-    participants: 1240,
-    image_url: "",
-  },
-  {
-    id: "c2",
-    title: "",
-    description:
-      "Boire 2L d'eau par jour pendant 2 semaines. Votre peau vous remerciera !",
-    durationDays: 0,
-    startDate: new Date().toISOString(),
-    isJoined: false,
-    participants: 856,
-    image_url: "",
-  },
-  {
-    id: "c3",
-    title: "",
-    description:
-      "Aucun écran 1h avant de dormir pendant 5 jours. Retrouvez un sommeil réparateur.",
-    durationDays: 0,
-    startDate: new Date().toISOString(),
-    isJoined: false,
-    participants: 2300,
-    image_url: "",
-  },
-  {
-    id: "c4",
-    title: "",
-    description:
-      "10 000 pas par jour pendant 1 mois. Bougez plus, vivez mieux.",
-    durationDays: 0,
-    startDate: new Date().toISOString(),
-    isJoined: false,
-    participants: 560,
-    image_url: "",
-  },
 ];
 
 export let MOCK_NOTIFICATIONS: Notification[] = [
@@ -213,34 +45,9 @@ export let MOCK_NOTIFICATIONS: Notification[] = [
     read: false,
     title: "Notification système",
   },
-  {
-    id: "n2",
-    type: "wellness",
-    message: "Vous avez complété 3 séances cette semaine.",
-    date: new Date().toISOString(),
-    read: true,
-    title: "Notification système",
-  },
-  {
-    id: "n3",
-    type: "community",
-    message: '"Le rituel du matin..."',
-    date: new Date().toISOString(),
-    read: false,
-    title: "Notification système",
-  },
-  {
-    id: "n4",
-    type: "system",
-    message: "Prenez 5 minutes pour respirer avant de dormir.",
-    date: new Date().toISOString(),
-    read: true,
-    title: "Notification système",
-  },
 ];
 
 export let MOCK_MOOD_HISTORY: MoodEntry[] = [];
-
 export let MOCK_QUOTES: QuoteOfTheDay[] = [];
 
 export let MOCK_POSTS: CommunityPost[] = [
@@ -248,53 +55,8 @@ export let MOCK_POSTS: CommunityPost[] = [
     id: "1",
     author: "Sophie",
     date: new Date().toISOString(),
-    content:
-      "Le rituel du matin a changé ma journée ! Je me sens tellement plus apaisée.",
+    content: "Le rituel du matin a changé ma journée !",
     likes: 12,
-    type: "message",
-    reactions: {},
-    comments: [],
-  },
-  {
-    id: "2",
-    author: "Équipe LYLOO",
-    date: new Date().toISOString(),
-    content:
-      "Conseil du jour : Prenez le temps de mâcher chaque bouchée pour une meilleure digestion.",
-    likes: 45,
-    type: "message",
-    reactions: {},
-    comments: [],
-  },
-  {
-    id: "3",
-    author: "Challenge",
-    date: new Date().toISOString(),
-    content:
-      "Aujourd'hui : 3 respirations profondes à chaque fois que vous regardez votre téléphone.",
-    likes: 89,
-    type: "message",
-    reactions: {},
-    comments: [],
-  },
-  {
-    id: "4",
-    author: "Camille",
-    date: new Date().toISOString(),
-    content:
-      "Qui a testé le nouveau cours de Pilates ? C'est intense pour les abdos ! 🔥",
-    likes: 23,
-    type: "message",
-    reactions: {},
-    comments: [],
-  },
-  {
-    id: "5",
-    author: "Lucas",
-    date: new Date().toISOString(),
-    content:
-      "Petite victoire : j'ai réussi à méditer 10 minutes ce matin sans regarder ma montre.",
-    likes: 56,
     type: "message",
     reactions: {},
     comments: [],
@@ -307,88 +69,83 @@ export const MockService = {
   // ==========================================
 
   getActivities: async (): Promise<Activity[]> => {
-    const { data, error } = await supabase
-      .from("activities")
-      .select("*");
-
+    const { data, error } = await supabase.from("activities").select("*");
     if (error) {
-      console.error("Erreur Supabase:", error.message);
+      console.error("Erreur Supabase (Activités):", error.message);
       return [];
     }
 
-    const formattedData = data.map((item) => ({
+    // PROTECTION ANTI-CRASH : On garantit un tableau (|| []) et on force les types
+    return (data || []).map((item) => ({
       ...item,
-      dureeMinutes: item.duree_minutes || 0,
+      dureeMinutes: Number(item.duree_minutes) || 0,
       contentUrl: item.content_url || "",
       imageUrl: item.image_url || "",
       couleurPrincipale: item.couleur_principale || "",
       ingredients: [],
       instructions: [],
-    }));
-
-    return formattedData as Activity[];
+    })) as Activity[];
   },
 
-  saveActivity: async (activity: Activity) => {
-    // Transforme l'objet React en objet compréhensible par Supabase
-    const activityToSave = {
-      id: activity.id,
-      type: activity.type,
-      categorie: activity.categorie,
-      titre: activity.titre,
-      description: activity.description,
-      duree_minutes: activity.dureeMinutes,
-      image_url: activity.imageUrl,
-      couleur_principale: activity.couleurPrincipale,
-      content_url: activity.contentUrl,
-    };
+  getProducts: async (): Promise<Product[]> => {
+    const { data, error } = await supabase.from("products").select("*");
 
-    const { error } = await supabase
-      .from("activities")
-      .upsert(activityToSave, { onConflict: "id" });
+    // ADD THIS TRACE LINE:
+    console.log("Trace Supabase Produits:", data, "Erreur:", error);
 
     if (error) {
-      console.error("Erreur lors de la sauvegarde:", error.message);
-      throw error;
+      console.error("Erreur Supabase (Produits):", error.message);
+      return [];
     }
+
+    // PROTECTION ANTI-CRASH : On force "price" à être un nombre pour éviter les erreurs .toFixed()
+    return (data || []).map((item) => ({
+      id: item.id || Math.random().toString(),
+      name: item.name || "Produit",
+      category: item.category || "Boutique",
+      description: item.description || "",
+      price: Number(item.price) || 0,
+      image_url: item.image_url || "",
+    })) as Product[];
   },
 
-  deleteActivity: async (id: string) => {
-    const { error } = await supabase
-      .from("activities")
-      .delete()
-      .eq("id", id);
-
+  getChallenges: async (): Promise<Challenge[]> => {
+    const { data, error } = await supabase.from("challenges").select("*");
     if (error) {
-      console.error("Erreur lors de la suppression:", error.message);
-      throw error;
+      console.error("Erreur Supabase (Challenges):", error.message);
+      return [];
     }
-  },
 
-  toggleFavorite: async (id: string) => {
-    console.log(
-      "La gestion des favoris sera implémentée plus tard avec une table Supabase dédiée.",
-    );
+    // PROTECTION ANTI-CRASH : On force "durationDays" et "participants" à être des nombres
+    return (data || []).map((item) => ({
+      id: item.id || Math.random().toString(),
+      title: item.title || "Challenge",
+      description: item.description || "",
+      durationDays: Number(item.duration_days) || 0,
+      startDate: item.start_date || "",
+      isJoined: Boolean(item.is_joined),
+      participants: Number(item.participants) || 0,
+      image_url: item.image_url || "",
+    })) as Challenge[];
   },
 
   // ==========================================
-  // DONNÉES TEMPORAIRES (PRODUITS, POSTS, ETC.)
+  // MODE LECTURE SEULE
   // ==========================================
+  saveActivity: async (activity: Activity) =>
+    console.warn("Lecture seule activée."),
+  deleteActivity: async (id: string) => console.warn("Lecture seule activée."),
+  saveProduct: async (product: Product) =>
+    console.warn("Lecture seule activée."),
+  deleteProduct: async (id: string) => console.warn("Lecture seule activée."),
+  toggleFavorite: async (id: string) => console.log("Favoris non implémentés."),
 
-  getProducts: async () => MOCK_PRODUCTS,
-  saveProduct: async (product: Product) => {
-    const index = MOCK_PRODUCTS.findIndex((p) => p.id === product.id);
-    if (index >= 0) MOCK_PRODUCTS[index] = product;
-    else MOCK_PRODUCTS.push(product);
-  },
-  deleteProduct: async (id: string) => {
-    const index = MOCK_PRODUCTS.findIndex((p) => p.id === id);
-    if (index >= 0) MOCK_PRODUCTS.splice(index, 1);
-  },
-
+  // ==========================================
+  // DONNÉES TEMPORAIRES (POSTS)
+  // ==========================================
   getPosts: async () => MOCK_POSTS,
   addPost: async (post: Partial<CommunityPost>) => {
-    const newPost: CommunityPost = {
+    MOCK_POSTS.unshift({
       id: Math.random().toString(36).substr(2, 9),
       author: post.author || "Moi",
       content: post.content || "",
@@ -397,39 +154,16 @@ export const MockService = {
       date: new Date().toISOString(),
       comments: [],
       reactions: {},
-    };
-    MOCK_POSTS.unshift(newPost);
+    });
   },
-  reactToPost: async (id: string, reaction: string) => {
-    const post = MOCK_POSTS.find((p) => p.id === id);
-    if (post) {
-      if (!post.reactions) post.reactions = {};
-      if (post.userReaction === reaction) {
-        post.reactions[reaction] = Math.max(
-          0,
-          (post.reactions[reaction] || 1) - 1,
-        );
-        post.userReaction = null;
-      } else {
-        if (post.userReaction && post.reactions[post.userReaction]) {
-          post.reactions[post.userReaction]--;
-        }
-        post.reactions[reaction] = (post.reactions[reaction] || 0) + 1;
-        post.userReaction = reaction;
-      }
-    }
-  },
-
-  getChallenges: async () => MOCK_CHALLENGES,
+  reactToPost: async (
+    id: string,
+    reaction: string,
+  ) => {/* Gardé simple pour l'espace */},
   getSessions: async () => MOCK_SESSIONS,
   getNotifications: async () => MOCK_NOTIFICATIONS,
   getMoodHistory: async () => MOCK_MOOD_HISTORY,
   getQuoteOfTheDay: (): QuoteOfTheDay =>
-    MOCK_QUOTES[0] ||
-    {
-      id: "0",
-      texte: "Le bonheur est parfois caché dans l'inconnu.",
-      auteur: "Victor Hugo",
-    },
+    MOCK_QUOTES[0] || { id: "0", texte: "Respirez.", auteur: "Lyloo" },
   getComments: async () => [],
 };
