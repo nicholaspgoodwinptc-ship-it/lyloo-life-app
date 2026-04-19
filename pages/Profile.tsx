@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/LayoutComponents';
-import { Moon, Sun, Smartphone, LogOut, ChevronRight, Briefcase, Info, User, Bell, X } from 'lucide-react';
+import { Moon, Sun, Smartphone, LogOut, ChevronRight, Briefcase, Info, User, Bell, X, Shield } from 'lucide-react';
 
 const Profile: React.FC = () => {
   const { user, signOut, setTheme } = useAuth();
@@ -32,12 +31,17 @@ const Profile: React.FC = () => {
               <div>
                   <h2 className="text-2xl font-bold text-lyloo-anthracite">{user.first_name} {user.last_name}</h2>
                   <p className="text-lyloo-anthracite/70 text-sm">{user.email}</p>
-                  {user.role === 'admin' && (
-                      <span className="inline-block mt-1 bg-lyloo-anthracite text-lyloo-beige text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
-                          Admin
-                      </span>
-                  )}
-              </div>
+                  <div className="bg-lyloo-anthracite rounded-3xl overflow-hidden shadow-lg mb-6">
+                    <button 
+                      onClick={() => navigate('/admin')} 
+                      className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors"
+                    >
+                      <span className="font-bold text-lyloo-beige flex items-center gap-3 text-base">
+                          <Shield size={20} className="text-lyloo-dore" /> Administration
+                  </span>
+                  <ChevronRight size={20} className="text-lyloo-beige/50" />
+              </button>
+          </div>              </div>
           </div>
       </div>
 
@@ -50,7 +54,7 @@ const Profile: React.FC = () => {
                     className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors"
                   >
                       <span className="font-bold text-lyloo-beige flex items-center gap-3 text-base">
-                          <Briefcase size={20} className="text-lyloo-dore" /> Administration
+                          <Shield size={20} className="text-lyloo-dore" /> Administration
                       </span>
                       <ChevronRight size={20} className="text-lyloo-beige/50" />
                   </button>

@@ -1,10 +1,23 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
+// 1. Browser Security Headers (CORS)
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
+};
+
+// 2. Your actual published Google Sheet URL
 const CSV_URL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vQH1LrtQULQ9FON_QKgG9tohAPpXunPNTBnawcxHAT8W_nUMXeUaagSWmD6fndtXu6Dk1zc54jNzo5J/pub?gid=518018541&single=true&output=csv";
 
 serve(async (req) => {
+  // 3. Answer the browser's security "preflight" check
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
+  }
+
   try {
     const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
@@ -18,7 +31,6 @@ serve(async (req) => {
 
     const records = lines.slice(1).map((line) => {
       const values = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-      // We check for 9 columns based on your provided CSV structure
       if (values.length < 9) return null;
 
       return {
@@ -34,42 +46,26 @@ serve(async (req) => {
       };
     }).filter(Boolean);
 
-    // --- DEBUGGING BLOCK ---
-    // If it finds 0 records, send back exactly what it saw so we can fix it!
-    if (records.length === 0) {
-      return new Response(
-        JSON.stringify({
-          message: "0 activities parsed. Debug info attached.",
-          totalLinesReceived: lines.length,
-          firstLineHeader: lines[0],
-          sampleRow: lines[1] || "No second line found",
-          rawSample: csvText.substring(0, 200),
-        }),
-        {
-          headers: { "Content-Type": "application/json" },
-        },
-      );
-    }
-    // --- END DEBUGGING BLOCK ---
-
     const { error } = await supabaseClient
       .from("activities")
       .upsert(records, { onConflict: "id" });
 
     if (error) throw error;
 
+    // 4. Return success WITH the CORS headers attached
     return new Response(
       JSON.stringify({
         message: `Successfully synced ${records.length} activities`,
       }),
       {
-        headers: { "Content-Type": "application/json" },
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       },
     );
   } catch (err) {
+    // 5. Return error WITH the CORS headers attached
     return new Response(JSON.stringify({ error: err.message }), {
       status: 500,
-      headers: { "Content-Type": "application/json" },
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 });
