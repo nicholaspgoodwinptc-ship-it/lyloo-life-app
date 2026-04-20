@@ -22,18 +22,6 @@ export let MOCK_NOTIFICATIONS: Notification[] = [
   },
 ];
 export let MOCK_QUOTES: QuoteOfTheDay[] = [];
-export let MOCK_POSTS: CommunityPost[] = [
-  {
-    id: "1",
-    author: "Sophie",
-    date: new Date().toISOString(),
-    content: "Le rituel du matin a changé ma journée !",
-    likes: 12,
-    type: "message",
-    reactions: {},
-    comments: [],
-  },
-];
 
 export const MockService = {
   // ==========================================
@@ -118,8 +106,6 @@ export const MockService = {
     }
   },
 
-  // ---- LECTURE ET ÉCRITURE DES SESSIONS ----
-
   getSessions: async (): Promise<Session[]> => {
     const { data, error } = await supabase.from("sessions").select("*").order(
       "created_at",
@@ -143,7 +129,7 @@ export const MockService = {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    const { error } = await supabase.from("sessions").insert([{
+    await supabase.from("sessions").insert([{
       user_id: user.id,
       activity_id: sessionData.activityId,
       duration_minutes: sessionData.duration || 0,
@@ -152,16 +138,7 @@ export const MockService = {
       note: sessionData.note || null,
       statut: sessionData.statut || "terminee",
     }]);
-
-    if (error) {
-      console.error(
-        "Erreur lors de l'enregistrement de la session:",
-        error.message,
-      );
-    }
   },
-
-  // ---- LECTURE ET ÉCRITURE DE L'HUMEUR ----
 
   getMoodHistory: async (): Promise<MoodEntry[]> => {
     const { data, error } = await supabase.from("mood_history").select("*")
@@ -179,36 +156,75 @@ export const MockService = {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    const { error } = await supabase.from("mood_history").insert([{
+    await supabase.from("mood_history").insert([{
       user_id: user.id,
       mood: entry.mood || "neutre",
       note: entry.note || null,
     }]);
-
-    if (error) {
-      console.error(
-        "Erreur lors de l'enregistrement de l'humeur:",
-        error.message,
-      );
-    }
   },
 
   // ==========================================
-  // MODE LECTURE SEULE (Admin/Google Sheets)
+  // COMMUNAUTÉ (Posts en temps réel)
+  // ==========================================
+
+  getPosts: async (): Promise<CommunityPost[]> => {
+    // 1. Récupération des posts
+    const { data: posts, error } = await supabase.from("posts").select("*")
+      .order("created_at", { ascending: false });
+    if (error) return [];
+
+    // 2. Récupération des profils pour afficher les noms des auteurs
+    const { data: profiles } = await supabase.from("profiles").select(
+      "id, first_name, last_name",
+    );
+
+    // 3. Assemblage des données
+    return (posts || []).map((post) => {
+      const authorProfile = profiles?.find((p) => p.id === post.user_id);
+      const authorName = authorProfile?.first_name
+        ? `${authorProfile.first_name} ${authorProfile.last_name || ""}`.trim()
+        : "Membre de la communauté";
+
+      return {
+        id: post.id,
+        author: authorName,
+        content: post.content,
+        type: post.type || "message",
+        date: post.created_at,
+        likes: 0,
+        reactions: {},
+        comments: [],
+      };
+    }) as CommunityPost[];
+  },
+
+  addPost: async (post: Partial<CommunityPost>) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { error } = await supabase.from("posts").insert([{
+      user_id: user.id,
+      content: post.content || "",
+      type: post.type || "message",
+    }]);
+
+    if (error) console.error("Erreur lors de l'ajout du post:", error.message);
+  },
+
+  // Gardé inactif pour l'instant (Nécessite des tables "likes" et "comments")
+  reactToPost: async () => {
+    console.log("Reactions à implémenter");
+  },
+  getComments: async () => [],
+
+  // ==========================================
+  // MODE LECTURE SEULE
   // ==========================================
   saveActivity: async () => console.warn("Lecture seule activée."),
   deleteActivity: async () => console.warn("Lecture seule activée."),
   saveProduct: async () => console.warn("Lecture seule activée."),
   deleteProduct: async () => console.warn("Lecture seule activée."),
-
-  // ==========================================
-  // DONNÉES TEMPORAIRES (POSTS)
-  // ==========================================
-  getPosts: async () => MOCK_POSTS,
-  addPost: async () => {/* Gardé simple pour l'espace */},
-  reactToPost: async () => {/* Gardé simple pour l'espace */},
   getNotifications: async () => MOCK_NOTIFICATIONS,
   getQuoteOfTheDay: (): QuoteOfTheDay =>
     MOCK_QUOTES[0] || { id: "0", texte: "Respirez.", auteur: "Lyloo" },
-  getComments: async () => [],
 };

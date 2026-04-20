@@ -16,6 +16,7 @@ interface AuthContextType {
   loading: boolean;
   signOut: () => Promise<void>;
   setTheme: (theme: string) => Promise<void>;
+  updateProfile: (updates: { first_name?: string, last_name?: string, avatar_url?: string }) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -38,10 +39,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         .eq('id', authUser.id)
         .single();
 
-      // AUTO-HEALING : Si le profil n'existe pas, on le crée !
+      // AUTO-HEALING
       if (error && error.code === 'PGRST116') {
-        console.log("Profil manquant, création automatique en cours...");
-        
         const newProfile = {
           id: authUser.id,
           first_name: authUser.user_metadata?.first_name || '',
@@ -56,9 +55,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           .select()
           .single();
 
-        if (!insertError) {
-          profile = createdProfile;
-        }
+        if (!insertError) profile = createdProfile;
       }
 
       const appUser: AppUser = {
@@ -111,20 +108,29 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const setTheme = async (newTheme: string) => {
     if (!user) return;
-    
     setUser({ ...user, theme: newTheme });
     applyTheme(newTheme);
+    await supabase.from('profiles').update({ theme: newTheme }).eq('id', user.id);
+  };
 
+  // NOUVELLE FONCTION : Mise à jour du profil
+  const updateProfile = async (updates: { first_name?: string, last_name?: string, avatar_url?: string }) => {
+    if (!user) return;
+    
+    // 1. Mise à jour de l'interface immédiatement
+    setUser({ ...user, ...updates });
+
+    // 2. Sauvegarde silencieuse dans Supabase
     const { error } = await supabase
       .from('profiles')
-      .update({ theme: newTheme })
+      .update(updates)
       .eq('id', user.id);
       
-    if (error) console.error("Erreur lors de la sauvegarde du thème:", error.message);
+    if (error) console.error("Erreur lors de la mise à jour:", error.message);
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, signOut, setTheme }}>
+    <AuthContext.Provider value={{ user, loading, signOut, setTheme, updateProfile }}>
       {!loading && children}
     </AuthContext.Provider>
   );
@@ -132,8 +138,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
+  if (context === undefined) throw new Error('useAuth must be used within an AuthProvider');
   return context;
 };
