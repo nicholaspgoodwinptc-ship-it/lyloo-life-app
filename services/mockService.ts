@@ -1,7 +1,6 @@
 import {
   Activity,
   Challenge,
-  Comment,
   CommunityPost,
   MoodEntry,
   Notification,
@@ -25,14 +24,26 @@ export let MOCK_QUOTES: QuoteOfTheDay[] = [];
 
 export const MockService = {
   // ==========================================
-  // LECTURE DES DONNÉES PUBLIQUES
+  // LECTURE DES DONNÉES PUBLIQUES (ADAPTER PATTERN)
   // ==========================================
 
   getActivities: async (): Promise<Activity[]> => {
-    const { data: activities, error } = await supabase.from("activities")
-      .select("*");
-    if (error) return [];
+    // 1. Fetch from all 3 tables simultaneously for maximum speed
+    const [physRes, mentRes, recRes] = await Promise.all([
+      supabase.from("physical_activities").select("*"),
+      supabase.from("mental_activities").select("*"),
+      supabase.from("recipes").select("*"),
+    ]);
 
+    if (physRes.error) {
+      console.error("Erreur activités physiques:", physRes.error.message);
+    }
+    if (mentRes.error) {
+      console.error("Erreur activités mentales:", mentRes.error.message);
+    }
+    if (recRes.error) console.error("Erreur recettes:", recRes.error.message);
+
+    // 2. Fetch User Favorites
     const { data: { user } } = await supabase.auth.getUser();
     let favoritedIds = new Set<string>();
 
@@ -43,16 +54,72 @@ export const MockService = {
       if (favorites) favorites.forEach((f) => favoritedIds.add(f.activity_id));
     }
 
-    return (activities || []).map((item) => ({
-      ...item,
+    // 3. Map Physical Activities
+    const physicalActivities = (physRes.data || []).map((item) => ({
+      id: item.id,
+      type: "physique",
+      categorie: item.discipline || "Activité physique",
+      titre: item.titre || "",
+      description: "",
       dureeMinutes: Number(item.duree_minutes) || 0,
-      contentUrl: item.content_url || "",
       imageUrl: item.image_url || "",
-      couleurPrincipale: item.couleur_principale || "",
+      contentUrl: item.video_url || "",
       estFavori: favoritedIds.has(item.id),
-      ingredients: [],
-      instructions: [],
-    })) as Activity[];
+      niveau: item.niveau || "",
+      equipment: item.equipment || "",
+      objectif: item.objectif || "",
+      ageCible: item.age_cible || "",
+    }));
+
+    // 4. Map Mental Activities
+    const mentalActivities = (mentRes.data || []).map((item) => ({
+      id: item.id,
+      type: "mental",
+      categorie: item.discipline || "Mental",
+      titre: item.titre || "",
+      description: item.description || "",
+      dureeMinutes: Number(item.duree_minutes) || 0,
+      imageUrl: item.image_url || "",
+      contentUrl: item.media_url || "", // We pass media_url here so ActivityDetail video player still works
+      estFavori: favoritedIds.has(item.id),
+      formatMedia: item.format_media || "",
+      estTheorie: Boolean(item.est_theorie),
+      attributSpecial: item.attribut_special || "",
+    }));
+
+    // 5. Map Recipes
+    const recipes = (recRes.data || []).map((item) => ({
+      id: item.id,
+      type: "recette",
+      categorie: "Recettes", // Helps standard filters catch it easily
+      titre: item.titre || "",
+      description: "",
+      dureeMinutes: Number(item.prep_minutes) || 0, // Using prep_minutes for the UI clock icon
+      imageUrl: item.image_url || "",
+      contentUrl: "",
+      estFavori: favoritedIds.has(item.id),
+      methode: item.methode || "",
+      calories: Number(item.calories) || 0,
+      saison: item.saison || "",
+      // Convert semicolon-separated strings from Google Sheets into arrays for React
+      ingredients: item.ingredients
+        ? item.ingredients.split(";").map((i: string) => i.trim()).filter(
+          Boolean,
+        )
+        : [],
+      instructions: item.instructions
+        ? item.instructions.split(";").map((i: string) => i.trim()).filter(
+          Boolean,
+        )
+        : [],
+    }));
+
+    // 6. Combine everything into one master array
+    return [
+      ...physicalActivities,
+      ...mentalActivities,
+      ...recipes,
+    ] as Activity[];
   },
 
   getProducts: async (): Promise<Product[]> => {
@@ -164,21 +231,18 @@ export const MockService = {
   },
 
   // ==========================================
-  // COMMUNAUTÉ (Posts en temps réel)
+  // COMMUNAUTÉ
   // ==========================================
 
   getPosts: async (): Promise<CommunityPost[]> => {
-    // 1. Récupération des posts
     const { data: posts, error } = await supabase.from("posts").select("*")
       .order("created_at", { ascending: false });
     if (error) return [];
 
-    // 2. Récupération des profils pour afficher les noms des auteurs
     const { data: profiles } = await supabase.from("profiles").select(
       "id, first_name, last_name",
     );
 
-    // 3. Assemblage des données
     return (posts || []).map((post) => {
       const authorProfile = profiles?.find((p) => p.id === post.user_id);
       const authorName = authorProfile?.first_name
@@ -202,16 +266,13 @@ export const MockService = {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    const { error } = await supabase.from("posts").insert([{
+    await supabase.from("posts").insert([{
       user_id: user.id,
       content: post.content || "",
       type: post.type || "message",
     }]);
-
-    if (error) console.error("Erreur lors de l'ajout du post:", error.message);
   },
 
-  // Gardé inactif pour l'instant (Nécessite des tables "likes" et "comments")
   reactToPost: async () => {
     console.log("Reactions à implémenter");
   },

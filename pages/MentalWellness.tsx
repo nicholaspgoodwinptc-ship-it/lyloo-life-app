@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { WaveHeader, BackgroundPattern, WellnessCardImage, Badge, Tooltip, Input, Skeleton, MentalIcon } from '../components/ui/LayoutComponents';
 import { Carousel } from '../components/ui/Carousel';
@@ -15,7 +14,7 @@ const MentalWellness: React.FC = () => {
   // Filters
   const [durationValue, setDurationValue] = useState<number>(0);
   const [levelFilter, setLevelFilter] = useState<'all' | 'débutant' | 'intermédiaire' | 'avancé'>('all');
-  const [selectedTags, setSelectedTags] = useState<string[]>([]); // Changed to array for multiple selection
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [localSearch, setLocalSearch] = useState('');
   const [isLoading, setIsLoading] = useState(true);
 
@@ -51,7 +50,6 @@ const MentalWellness: React.FC = () => {
              matchLevel = a.niveau === levelFilter;
           }
 
-          // Match ANY selected tag (OR logic)
           let matchTag = true;
           if (selectedTags.length > 0) {
               matchTag = selectedTags.some(tag => 
@@ -88,7 +86,6 @@ const MentalWellness: React.FC = () => {
     { id: 'confiance', label: 'Confiance', icon: Smile, color: 'bg-lyloo-terracotta' },
   ];
 
-  // Fix: Explicitly handle 'id' as string to resolve 'unknown' type inference issues that can occur in async closures
   const toggleFavorite = async (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
     const activityId: string = String(id);
@@ -114,7 +111,6 @@ const MentalWellness: React.FC = () => {
     <div className="min-h-screen bg-lyloo-beige dark:bg-lyloo-dark-bg pb-40 relative overflow-hidden">
       <BackgroundPattern opacity={0.08} />
       
-      {/* Vibration Animation Style */}
       <style>{`
         @keyframes wiggle {
           0%, 100% { transform: translateY(-50%) rotate(0deg); }
@@ -160,7 +156,7 @@ const MentalWellness: React.FC = () => {
                  )}
              </div>
 
-             {/* Tag Filter (Multiple Selection) */}
+             {/* Tag Filter */}
              <div>
                 <div className="flex justify-between items-center mb-2">
                     <h3 className="text-xs font-bold text-stone-500 uppercase flex items-center gap-1"><Tag size={12}/> Tags (Sélection multiple)</h3>
@@ -287,15 +283,14 @@ const MentalWellness: React.FC = () => {
         <div className="bg-[#f2efe4] dark:bg-stone-800 rounded-[32px] p-6 shadow-sm min-h-[400px]">
             <h3 className="font-bold text-2xl font-secondary text-lyloo-anthracite dark:text-lyloo-beige mb-6 text-center">Découvrir</h3>
             
-            {/* Category Carousel - Adjusted for fluidity and responsiveness */}
             <div className="mb-8">
                 <Carousel 
                     items={CAROUSEL_CATEGORIES} 
                     onItemClick={handleCategorySelect}
                     autoPlayInterval={3000}
-                    className="md:h-[260px]" // Increase height slightly for larger screens
+                    className="md:h-[260px]"
                     renderItem={(item, isActive) => (
-                        <div className={`
+                        <div key={item.id} className={`
                             w-[140px] md:w-[160px] h-[160px] md:h-[180px] rounded-[32px] flex flex-col items-center justify-center gap-4 shadow-lg
                             transition-all duration-500 ease-out mx-auto
                             ${isActive ? item.color + ' scale-100 opacity-100 z-30' : 'bg-white dark:bg-stone-700 opacity-50 scale-90 z-10'}
@@ -323,15 +318,12 @@ const MentalWellness: React.FC = () => {
                             onClick={() => setSelectedActivity(item)}
                             className="relative aspect-[4/5] rounded-[24px] overflow-hidden group cursor-pointer shadow-sm hover:shadow-lg transition-all duration-500 animate-in fade-in zoom-in duration-300 bg-white"
                         >
-                            {/* Hover Effacement Effect: Scale up image and fade slightly to reveal gradient or details */}
                             <div className="w-full h-full transition-transform duration-700 group-hover:scale-110">
                                 <WellnessCardImage src={item.imageUrl} alt={item.titre} category={item.categorie} className="w-full h-full" />
                             </div>
                             
-                            {/* Gradient Overlay - Becomes stronger on hover to make text pop, simulating focus */}
                             <div className="absolute inset-0 bg-gradient-to-t from-lyloo-anthracite/80 via-transparent to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-300"></div>
                             
-                            {/* Content Slide Up Animation */}
                             <Tooltip content={item.estFavori ? "Retirer" : "Ajouter aux favoris"}>
                                  <button onClick={(e) => toggleFavorite(e, item.id)} className="absolute top-2 right-2 w-8 h-8 bg-black/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white hover:text-red-500 transition-all opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 duration-300">
                                     <Heart size={16} fill={item.estFavori ? "currentColor" : "none"} className={item.estFavori ? "text-red-500" : ""} />

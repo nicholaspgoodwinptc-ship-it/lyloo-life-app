@@ -1,4 +1,3 @@
-
 export interface UserProfile {
   id: string;
   email: string;
@@ -12,32 +11,41 @@ export interface UserProfile {
     midi: boolean;
     soir: boolean;
   };
-  theme: 'light' | 'dark' | 'system';
-  role: 'user' | 'admin';
+  theme: "light" | "dark" | "system";
+  role: "user" | "admin";
 }
 
-export type WellnessType = 'mental' | 'physique';
+export type WellnessType = "mental" | "physique";
 
 export interface Activity {
   id: string;
-  type: WellnessType;
-  categorie: string; // e.g., "Méditation", "Yoga", "Recette"
+  type: string;
+  categorie: string;
   titre: string;
-  description: string;
-  dureeMinutes: number; // or prep time for recipes
-  niveau?: 'débutant' | 'intermédiaire' | 'avancé';
+  description?: string;
+  dureeMinutes: number;
   imageUrl: string;
-  couleurPrincipale: string; // Hex code for specific branding
-  tags: string[];
-  estFavori: boolean;
-  contentUrl?: string; // Audio/Video source
-  
-  // Exercise specific
-  equipment?: string; 
-
-  // Recipe specific fields
+  contentUrl?: string;
+  couleurPrincipale?: string;
+  estFavori?: boolean;
   ingredients?: string[];
   instructions?: string[];
+
+  // Nouveaux champs : Physiques
+  niveau?: string;
+  equipment?: string;
+  objectif?: string;
+  ageCible?: string;
+
+  // Nouveaux champs : Mentaux
+  formatMedia?: string;
+  estTheorie?: boolean;
+  attributSpecial?: string;
+
+  // Nouveaux champs : Recettes
+  methode?: string;
+  calories?: number;
+  saison?: string;
 }
 
 export interface Session {
@@ -45,7 +53,7 @@ export interface Session {
   activityId: string;
   userId: string;
   date: string; // ISO date
-  statut: 'terminee' | 'en cours' | 'abandonnee';
+  statut: "terminee" | "en cours" | "abandonnee";
   duration?: number;
   moodBefore?: string;
   moodAfter?: string;
@@ -77,7 +85,7 @@ export interface CommunityPost {
   id: string;
   author: string;
   content: string;
-  type: 'message' | 'conseil' | 'challenge';
+  type: "message" | "conseil" | "challenge";
   likes: number;
   date: string; // ISO date
   isLiked?: boolean;
@@ -112,5 +120,5 @@ export interface Notification {
   message: string;
   date: string;
   read: boolean;
-  type: 'community' | 'wellness' | 'system';
+  type: "community" | "wellness" | "system";
 }

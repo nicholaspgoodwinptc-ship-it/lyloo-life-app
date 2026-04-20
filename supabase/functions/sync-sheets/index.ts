@@ -7,24 +7,41 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
-// Les trois liens officiels Google Sheets
-const ACTIVITIES_URL =
-  "https://docs.google.com/spreadsheets/d/e/2PACX-1vQH1LrtQULQ9FON_QKgG9tohAPpXunPNTBnawcxHAT8W_nUMXeUaagSWmD6fndtXu6Dk1zc54jNzo5J/pub?gid=518018541&single=true&output=csv";
-const PRODUCTS_URL =
-  "https://docs.google.com/spreadsheets/d/e/2PACX-1vQH1LrtQULQ9FON_QKgG9tohAPpXunPNTBnawcxHAT8W_nUMXeUaagSWmD6fndtXu6Dk1zc54jNzo5J/pub?gid=368489137&single=true&output=csv";
-const CHALLENGES_URL =
-  "https://docs.google.com/spreadsheets/d/e/2PACX-1vQH1LrtQULQ9FON_QKgG9tohAPpXunPNTBnawcxHAT8W_nUMXeUaagSWmD6fndtXu6Dk1zc54jNzo5J/pub?gid=337547159&single=true&output=csv";
+// Les 5 liens Google Sheets (Physique, Mental, Recettes, Produits, Challenges)
+const URLS = {
+  physique:
+    "https://docs.google.com/spreadsheets/d/e/2PACX-1vQH1LrtQULQ9FON_QKgG9tohAPpXunPNTBnawcxHAT8W_nUMXeUaagSWmD6fndtXu6Dk1zc54jNzo5J/pub?gid=351802395&single=true&output=csv",
+  mental:
+    "https://docs.google.com/spreadsheets/d/e/2PACX-1vQH1LrtQULQ9FON_QKgG9tohAPpXunPNTBnawcxHAT8W_nUMXeUaagSWmD6fndtXu6Dk1zc54jNzo5J/pub?gid=562610296&single=true&output=csv",
+  recettes:
+    "https://docs.google.com/spreadsheets/d/e/2PACX-1vQH1LrtQULQ9FON_QKgG9tohAPpXunPNTBnawcxHAT8W_nUMXeUaagSWmD6fndtXu6Dk1zc54jNzo5J/pub?gid=942313329&single=true&output=csv",
+  produits:
+    "https://docs.google.com/spreadsheets/d/e/2PACX-1vQH1LrtQULQ9FON_QKgG9tohAPpXunPNTBnawcxHAT8W_nUMXeUaagSWmD6fndtXu6Dk1zc54jNzo5J/pub?gid=368489137&single=true&output=csv",
+  challenges:
+    "https://docs.google.com/spreadsheets/d/e/2PACX-1vQH1LrtQULQ9FON_QKgG9tohAPpXunPNTBnawcxHAT8W_nUMXeUaagSWmD6fndtXu6Dk1zc54jNzo5J/pub?gid=337547159&single=true&output=csv",
+};
 
-// Fonction utilitaire pour lire et découper les CSV
-async function fetchAndParseCsv(url: string) {
+// Fonction intelligente : lit les noms des colonnes pour s'adapter à n'importe quel ordre !
+async function fetchAndParseCsvDynamic(url: string) {
   const response = await fetch(url);
   const text = await response.text();
-  const lines = text.split("\n");
-  return lines.slice(1).map((line) =>
-    line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map((v) =>
-      v?.replace(/"/g, "").trim()
-    )
+  const lines = text.split("\n").filter((line) => line.trim() !== "");
+  if (lines.length === 0) return [];
+
+  const headers = lines[0].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map((h) =>
+    h.replace(/"/g, "").trim().toLowerCase()
   );
+
+  return lines.slice(1).map((line) => {
+    const values = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map((v) =>
+      v?.replace(/"/g, "").trim()
+    );
+    const obj: any = {};
+    headers.forEach((h, i) => {
+      obj[h] = values[i] || "";
+    });
+    return obj;
+  }).filter((obj) => obj.id && obj.id !== ""); // Ne garder que les lignes avec un ID
 }
 
 serve(async (req) => {
@@ -38,80 +55,101 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
     );
 
-    // 1. Téléchargement simultané des 3 fichiers CSV
-    const [activitiesData, productsData, challengesData] = await Promise.all([
-      fetchAndParseCsv(ACTIVITIES_URL),
-      fetchAndParseCsv(PRODUCTS_URL),
-      fetchAndParseCsv(CHALLENGES_URL),
-    ]);
+    // 1. Téléchargement des 5 fichiers CSV en parallèle (Ultra rapide)
+    const [physique, mental, recettes, produits, challenges] = await Promise
+      .all([
+        fetchAndParseCsvDynamic(URLS.physique),
+        fetchAndParseCsvDynamic(URLS.mental),
+        fetchAndParseCsvDynamic(URLS.recettes),
+        fetchAndParseCsvDynamic(URLS.produits),
+        fetchAndParseCsvDynamic(URLS.challenges),
+      ]);
 
-    // 2. Formatage des Activités
-    const activitiesRecords = activitiesData.filter((v) => v[0]).map(
-      (values) => ({
-        id: values[0],
-        type: values[1],
-        categorie: values[2],
-        titre: values[3],
-        description: values[4],
-        duree_minutes: parseInt(values[5]) || 0,
-        image_url: values[6] || "",
-        couleur_principale: values[7] || "",
-        content_url: values[8] || "",
-      })
-    );
-
-    // 3. Formatage des Produits (CORRIGÉ POUR CORRESPONDRE À VOTRE CSV)
-    const productsRecords = productsData.filter((v) => v[0]).map((values) => ({
-      id: values[0], // Colonne A: id
-      name: values[1], // Colonne B: name
-      price: parseFloat(values[2]) || 0, // Colonne C: price
-      image_url: values[3] || "", // Colonne D: image
-      category: values[4] || "", // Colonne E: category
-      description: values[5] || "", // Colonne F: description
+    // 2. Formatage dynamique basé sur les entêtes
+    const physRecords = physique.map((p) => ({
+      id: p.id,
+      discipline: p.discipline,
+      equipment: p.equipment || p.equipements,
+      niveau: p.niveau,
+      objectif: p.objectif,
+      age_cible: p.age_cible || p.age,
+      titre: p.titre,
+      duree_minutes: parseInt(p.duree_minutes) || 0,
+      video_url: p.video_url,
+      image_url: p.image_url || p.image,
     }));
 
-    // 4. Formatage des Challenges
-    const challengesRecords = challengesData.filter((v) => v[0]).map(
-      (values) => ({
-        id: values[0],
-        title: values[1],
-        description: values[2],
-        duration_days: parseInt(values[3]) || 0,
-        start_date: values[4] || "",
-        is_joined: values[5]?.toLowerCase() === "true",
-        participants: parseInt(values[6]) || 0,
-        image_url: values[7] || "",
-      })
-    );
+    const mentRecords = mental.map((m) => ({
+      id: m.id,
+      grand_domaine: m.grand_domaine,
+      discipline: m.discipline,
+      titre: m.titre,
+      description: m.description,
+      est_theorie: m.est_theorie?.toLowerCase() === "vrai" ||
+        m.est_theorie?.toLowerCase() === "true",
+      duree_minutes: parseInt(m.duree_minutes) || 0,
+      format_media: m.format_media,
+      media_url: m.media_url,
+      image_url: m.image_url || m.image,
+      attribut_special: m.attribut_special,
+    }));
 
-    // 5. Sauvegarde dans la base de données Supabase
-    const { error: actErr } = await supabaseClient.from("activities").upsert(
-      activitiesRecords,
-      { onConflict: "id" },
-    );
-    if (actErr) throw new Error(`Erreur Activités: ${actErr.message}`);
+    const recRecords = recettes.map((r) => ({
+      id: r.id,
+      methode: r.methode,
+      calories: parseInt(r.calories) || 0,
+      saison: r.saison,
+      type_repas: r.type_repas,
+      titre: r.titre,
+      prep_minutes: parseInt(r.prep_minutes) || 0,
+      ingredients: r.ingredients,
+      instructions: r.instructions,
+      is_nouveaute: r.is_nouveaute?.toLowerCase() === "vrai" ||
+        r.is_nouveaute?.toLowerCase() === "true",
+      image_url: r.image_url || r.image,
+    }));
 
-    const { error: prodErr } = await supabaseClient.from("products").upsert(
-      productsRecords,
-      { onConflict: "id" },
-    );
-    if (prodErr) throw new Error(`Erreur Produits: ${prodErr.message}`);
+    const prodRecords = produits.map((p) => ({
+      id: p.id,
+      name: p.name || p.nom,
+      price: parseFloat(p.price || p.prix) || 0,
+      category: p.category || p.categorie,
+      description: p.description,
+      image_url: p.image_url || p.image,
+    }));
 
-    const { error: chalErr } = await supabaseClient.from("challenges").upsert(
-      challengesRecords,
-      { onConflict: "id" },
-    );
-    if (chalErr) throw new Error(`Erreur Challenges: ${chalErr.message}`);
+    const chalRecords = challenges.map((c) => ({
+      id: c.id,
+      title: c.title || c.titre,
+      description: c.description,
+      duration_days: parseInt(c.duration_days || c.duree_jours) || 0,
+      start_date: c.start_date || c.date_debut,
+      is_joined: c.is_joined?.toLowerCase() === "true",
+      participants: parseInt(c.participants) || 0,
+      image_url: c.image_url || c.image,
+    }));
 
-    // 6. Succès !
+    // 3. Sauvegarde dans Supabase
+    await Promise.all([
+      supabaseClient.from("physical_activities").upsert(physRecords, {
+        onConflict: "id",
+      }),
+      supabaseClient.from("mental_activities").upsert(mentRecords, {
+        onConflict: "id",
+      }),
+      supabaseClient.from("recipes").upsert(recRecords, { onConflict: "id" }),
+      supabaseClient.from("products").upsert(prodRecords, { onConflict: "id" }),
+      supabaseClient.from("challenges").upsert(chalRecords, {
+        onConflict: "id",
+      }),
+    ]);
+
     return new Response(
       JSON.stringify({
         message:
-          `Synchronisation réussie : ${activitiesRecords.length} act., ${productsRecords.length} prod., ${challengesRecords.length} chal.`,
+          `Sync OK : ${physRecords.length} Phys, ${mentRecords.length} Ment, ${recRecords.length} Recettes, ${prodRecords.length} Prod, ${chalRecords.length} Chal.`,
       }),
-      {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      },
+      { headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   } catch (err) {
     return new Response(JSON.stringify({ error: err.message }), {
