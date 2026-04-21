@@ -5,6 +5,7 @@ import { Button, Card, Badge, WellnessCardImage } from '../components/ui/LayoutC
 import { X, Dumbbell, Smile, Tag, ChefHat, RefreshCw, Database } from 'lucide-react';
 import { MockService } from '../services/mockService';
 import { Activity, Product } from '../types';
+import { supabase } from '../services/supabaseClient'; // <-- L'IMPORT EST ICI
 
 type Tab = 'mental' | 'physique' | 'recettes' | 'boutique';
 
@@ -30,35 +31,32 @@ const Admin: React.FC = () => {
     switch(activeTab) {
       case 'mental': return activities.filter(a => a.type === 'mental');
       case 'physique': return activities.filter(a => a.type === 'physique');
-      case 'recettes': return activities.filter(a => a.type === 'recette'); // <-- FIX IS HERE
+      case 'recettes': return activities.filter(a => a.type === 'recette');
       case 'boutique': return products;
       default: return [];
     }
   };
 
+  // <-- LA FONCTION CORRIGÉE EST ICI
   const syncGoogleSheets = async () => {
     setIsSyncing(true);
     setSyncMessage('Synchronisation en cours...');
     
     try {
-      const response = await fetch('https://qfllowzswixpukwftzja.supabase.co/functions/v1/sync-sheets', {
+      // Utilisation du client Supabase officiel (qui connaît votre vraie URL !)
+      const { data, error } = await supabase.functions.invoke('sync-sheets', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
       });
       
-      const result = await response.json();
+      if (error) throw error;
       
-      if (response.ok) {
-         setSyncMessage('✅ Succès: ' + result.message);
-         setRefreshTrigger(prev => prev + 1); // Recharge les listes
-      } else {
-         setSyncMessage('❌ Erreur: ' + (result.error || 'Erreur inconnue'));
-      }
+      setSyncMessage('✅ Succès: ' + (data?.message || 'Synchronisation terminée'));
+      setRefreshTrigger(prev => prev + 1); // Recharge les listes
     } catch (error: any) {
       setSyncMessage('❌ Erreur de connexion: ' + error.message);
     } finally {
       setIsSyncing(false);
-      setTimeout(() => setSyncMessage(''), 8000); // Efface le message après 8s
+      setTimeout(() => setSyncMessage(''), 8000); 
     }
   };
 
@@ -67,7 +65,7 @@ const Admin: React.FC = () => {
   const TABS = [
     { id: 'mental', label: 'Mental', icon: Smile, count: activities.filter(a => a.type === 'mental').length },
     { id: 'physique', label: 'Physique', icon: Dumbbell, count: activities.filter(a => a.type === 'physique').length },
-    { id: 'recettes', label: 'Recettes', icon: ChefHat, count: activities.filter(a => a.type === 'recette').length }, // <-- FIX IS HERE
+    { id: 'recettes', label: 'Recettes', icon: ChefHat, count: activities.filter(a => a.type === 'recette').length },
     { id: 'boutique', label: 'Boutique', icon: Tag, count: products.length },
   ];
 

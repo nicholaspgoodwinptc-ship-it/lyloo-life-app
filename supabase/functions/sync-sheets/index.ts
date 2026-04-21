@@ -18,15 +18,16 @@ const URLS = {
     "https://docs.google.com/spreadsheets/d/e/2PACX-1vQH1LrtQULQ9FON_QKgG9tohAPpXunPNTBnawcxHAT8W_nUMXeUaagSWmD6fndtXu6Dk1zc54jNzo5J/pub?gid=368489137&single=true&output=csv",
   challenges:
     "https://docs.google.com/spreadsheets/d/e/2PACX-1vQH1LrtQULQ9FON_QKgG9tohAPpXunPNTBnawcxHAT8W_nUMXeUaagSWmD6fndtXu6Dk1zc54jNzo5J/pub?gid=337547159&single=true&output=csv",
+  quotes:
+    "https://docs.google.com/spreadsheets/d/e/2PACX-1vQH1LrtQULQ9FON_QKgG9tohAPpXunPNTBnawcxHAT8W_nUMXeUaagSWmD6fndtXu6Dk1zc54jNzo5J/pub?gid=1493949505&single=true&output=csv",
+  notifications:
+    "https://docs.google.com/spreadsheets/d/e/2PACX-1vQH1LrtQULQ9FON_QKgG9tohAPpXunPNTBnawcxHAT8W_nUMXeUaagSWmD6fndtXu6Dk1zc54jNzo5J/pub?gid=129984928&single=true&output=csv",
 };
 
 async function fetchAndParseCsvDynamic(url: string) {
   const response = await fetch(url);
   let text = await response.text();
-
-  // THE FIX: Strip the invisible BOM character from the start of the file
-  text = text.replace(/^\uFEFF/, "");
-
+  text = text.replace(/^\uFEFF/, ""); // BOM Fix
   const lines = text.split("\n").filter((line) => line.trim() !== "");
   if (lines.length === 0) return [];
 
@@ -57,14 +58,23 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
     );
 
-    const [physique, mental, recettes, produits, challenges] = await Promise
-      .all([
-        fetchAndParseCsvDynamic(URLS.physique),
-        fetchAndParseCsvDynamic(URLS.mental),
-        fetchAndParseCsvDynamic(URLS.recettes),
-        fetchAndParseCsvDynamic(URLS.produits),
-        fetchAndParseCsvDynamic(URLS.challenges),
-      ]);
+    const [
+      physique,
+      mental,
+      recettes,
+      produits,
+      challenges,
+      quotes,
+      notifications,
+    ] = await Promise.all([
+      fetchAndParseCsvDynamic(URLS.physique),
+      fetchAndParseCsvDynamic(URLS.mental),
+      fetchAndParseCsvDynamic(URLS.recettes),
+      fetchAndParseCsvDynamic(URLS.produits),
+      fetchAndParseCsvDynamic(URLS.challenges),
+      fetchAndParseCsvDynamic(URLS.quotes),
+      fetchAndParseCsvDynamic(URLS.notifications),
+    ]);
 
     const physRecords = physique.map((p) => ({
       id: p.id,
@@ -122,11 +132,27 @@ serve(async (req) => {
       id: c.id,
       title: c.title || c.titre,
       description: c.description,
-      duration_days: parseInt(c.duration_days || c.duree_jours) || 0,
-      start_date: c.start_date || c.date_debut,
-      is_joined: c.is_joined?.toLowerCase() === "true",
+      duration_days: parseInt(c.duration_days || c.dureejours) || 0,
+      start_date: c.start_date || c.datedebut,
+      is_joined: c.is_joined?.toLowerCase() === "true" ||
+        c.isjoined?.toLowerCase() === "true",
       participants: parseInt(c.participants) || 0,
       image_url: c.image_url || c.image,
+    }));
+
+    const quoRecords = quotes.map((q) => ({
+      id: q.id,
+      texte: q.texte,
+      auteur: q.auteur,
+    }));
+
+    const notRecords = notifications.map((n) => ({
+      id: n.id,
+      type: n.type,
+      message: n.message,
+      date: n.date,
+      read: n.read?.toLowerCase() === "vrai" ||
+        n.read?.toLowerCase() === "true",
     }));
 
     await Promise.all([
@@ -141,12 +167,15 @@ serve(async (req) => {
       supabaseClient.from("challenges").upsert(chalRecords, {
         onConflict: "id",
       }),
+      supabaseClient.from("quotes").upsert(quoRecords, { onConflict: "id" }),
+      supabaseClient.from("notifications").upsert(notRecords, {
+        onConflict: "id",
+      }),
     ]);
 
     return new Response(
       JSON.stringify({
-        message:
-          `Sync OK : ${physRecords.length} Phys, ${mentRecords.length} Ment, ${recRecords.length} Recettes, ${prodRecords.length} Prod, ${chalRecords.length} Chal.`,
+        message: `Sync OK: 7 Tables mises à jour avec succès !`,
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );

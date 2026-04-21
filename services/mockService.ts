@@ -48,10 +48,12 @@ export const MockService = {
     let favoritedIds = new Set<string>();
 
     if (user) {
-      const { data: favorites } = await supabase.from("favorites").select(
-        "activity_id",
-      );
-      if (favorites) favorites.forEach((f) => favoritedIds.add(f.activity_id));
+      const { data: favorites } = await supabase
+        .from("favorites")
+        .select("activity_id");
+      if (favorites) {
+        favorites.forEach((f) => favoritedIds.add(f.activity_id));
+      }
     }
 
     // 3. Map Physical Activities
@@ -103,14 +105,16 @@ export const MockService = {
       saison: item.saison || "",
       // Convert semicolon-separated strings from Google Sheets into arrays for React
       ingredients: item.ingredients
-        ? item.ingredients.split(";").map((i: string) => i.trim()).filter(
-          Boolean,
-        )
+        ? item.ingredients
+          .split(";")
+          .map((i: string) => i.trim())
+          .filter(Boolean)
         : [],
       instructions: item.instructions
-        ? item.instructions.split(";").map((i: string) => i.trim()).filter(
-          Boolean,
-        )
+        ? item.instructions
+          .split(";")
+          .map((i: string) => i.trim())
+          .filter(Boolean)
         : [],
     }));
 
@@ -158,26 +162,26 @@ export const MockService = {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    const { data } = await supabase.from("favorites").select("id").eq(
-      "activity_id",
-      activityId,
-    ).single();
+    const { data } = await supabase
+      .from("favorites")
+      .select("id")
+      .eq("activity_id", activityId)
+      .single();
 
     if (data) {
       await supabase.from("favorites").delete().eq("id", data.id);
     } else {
-      await supabase.from("favorites").insert([{
-        user_id: user.id,
-        activity_id: activityId,
-      }]);
+      await supabase
+        .from("favorites")
+        .insert([{ user_id: user.id, activity_id: activityId }]);
     }
   },
 
   getSessions: async (): Promise<Session[]> => {
-    const { data, error } = await supabase.from("sessions").select("*").order(
-      "created_at",
-      { ascending: false },
-    );
+    const { data, error } = await supabase
+      .from("sessions")
+      .select("*")
+      .order("created_at", { ascending: false });
     if (error) return [];
     return (data || []).map((s) => ({
       id: s.id,
@@ -196,19 +200,23 @@ export const MockService = {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    await supabase.from("sessions").insert([{
-      user_id: user.id,
-      activity_id: sessionData.activityId,
-      duration_minutes: sessionData.duration || 0,
-      mood_before: sessionData.moodBefore || null,
-      mood_after: sessionData.moodAfter || null,
-      note: sessionData.note || null,
-      statut: sessionData.statut || "terminee",
-    }]);
+    await supabase.from("sessions").insert([
+      {
+        user_id: user.id,
+        activity_id: sessionData.activityId,
+        duration_minutes: sessionData.duration || 0,
+        mood_before: sessionData.moodBefore || null,
+        mood_after: sessionData.moodAfter || null,
+        note: sessionData.note || null,
+        statut: sessionData.statut || "terminee",
+      },
+    ]);
   },
 
   getMoodHistory: async (): Promise<MoodEntry[]> => {
-    const { data, error } = await supabase.from("mood_history").select("*")
+    const { data, error } = await supabase
+      .from("mood_history")
+      .select("*")
       .order("created_at", { ascending: false });
     if (error) return [];
     return (data || []).map((m) => ({
@@ -223,11 +231,13 @@ export const MockService = {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    await supabase.from("mood_history").insert([{
-      user_id: user.id,
-      mood: entry.mood || "neutre",
-      note: entry.note || null,
-    }]);
+    await supabase.from("mood_history").insert([
+      {
+        user_id: user.id,
+        mood: entry.mood || "neutre",
+        note: entry.note || null,
+      },
+    ]);
   },
 
   // ==========================================
@@ -235,13 +245,15 @@ export const MockService = {
   // ==========================================
 
   getPosts: async (): Promise<CommunityPost[]> => {
-    const { data: posts, error } = await supabase.from("posts").select("*")
+    const { data: posts, error } = await supabase
+      .from("posts")
+      .select("*")
       .order("created_at", { ascending: false });
     if (error) return [];
 
-    const { data: profiles } = await supabase.from("profiles").select(
-      "id, first_name, last_name",
-    );
+    const { data: profiles } = await supabase
+      .from("profiles")
+      .select("id, first_name, last_name");
 
     return (posts || []).map((post) => {
       const authorProfile = profiles?.find((p) => p.id === post.user_id);
@@ -266,11 +278,13 @@ export const MockService = {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    await supabase.from("posts").insert([{
-      user_id: user.id,
-      content: post.content || "",
-      type: post.type || "message",
-    }]);
+    await supabase.from("posts").insert([
+      {
+        user_id: user.id,
+        content: post.content || "",
+        type: post.type || "message",
+      },
+    ]);
   },
 
   reactToPost: async () => {
@@ -285,7 +299,36 @@ export const MockService = {
   deleteActivity: async () => console.warn("Lecture seule activée."),
   saveProduct: async () => console.warn("Lecture seule activée."),
   deleteProduct: async () => console.warn("Lecture seule activée."),
-  getNotifications: async () => MOCK_NOTIFICATIONS,
-  getQuoteOfTheDay: (): QuoteOfTheDay =>
-    MOCK_QUOTES[0] || { id: "0", texte: "Respirez.", auteur: "Lyloo" },
+
+  // ==========================================
+  // NOTIFICATIONS & CITATIONS (ASYNCHRONES)
+  // ==========================================
+  getNotifications: async (): Promise<Notification[]> => {
+    const { data, error } = await supabase.from("notifications").select("*");
+    if (error) return [];
+    return (data || []).map((n) => ({
+      id: n.id,
+      type: n.type || "system",
+      message: n.message || "",
+      date: n.date || new Date().toISOString(),
+      read: Boolean(n.read),
+      title: "Notification",
+    })) as Notification[];
+  },
+
+  getQuoteOfTheDay: async (): Promise<QuoteOfTheDay> => {
+    const { data, error } = await supabase.from("quotes").select("*");
+    if (error || !data || data.length === 0) {
+      return { id: "0", texte: "Respirez.", auteur: "Lyloo" };
+    }
+    // Choisir une citation au hasard parmi celles disponibles
+    const randomIndex = Math.floor(Math.random() * data.length);
+    const randomQuote = data[randomIndex];
+
+    return {
+      id: randomQuote.id,
+      texte: randomQuote.texte,
+      auteur: randomQuote.auteur,
+    };
+  },
 };
