@@ -82,7 +82,7 @@ export const MockService = {
       description: item.description || "",
       dureeMinutes: Number(item.duree_minutes) || 0,
       imageUrl: item.image_url || "",
-      contentUrl: item.media_url || "", // We pass media_url here so ActivityDetail video player still works
+      contentUrl: item.media_url || "",
       estFavori: favoritedIds.has(item.id),
       formatMedia: item.format_media || "",
       estTheorie: Boolean(item.est_theorie),
@@ -93,17 +93,16 @@ export const MockService = {
     const recipes = (recRes.data || []).map((item) => ({
       id: item.id,
       type: "recette",
-      categorie: "Recettes", // Helps standard filters catch it easily
+      categorie: "Recettes",
       titre: item.titre || "",
       description: "",
-      dureeMinutes: Number(item.prep_minutes) || 0, // Using prep_minutes for the UI clock icon
+      dureeMinutes: Number(item.prep_minutes) || 0,
       imageUrl: item.image_url || "",
       contentUrl: "",
       estFavori: favoritedIds.has(item.id),
       methode: item.methode || "",
       calories: Number(item.calories) || 0,
       saison: item.saison || "",
-      // Convert semicolon-separated strings from Google Sheets into arrays for React
       ingredients: item.ingredients
         ? item.ingredients
           .split(";")
@@ -268,7 +267,7 @@ export const MockService = {
         type: post.type || "message",
         date: post.created_at,
         likes: 0,
-        reactions: {},
+        reactions: post.reactions || {}, // SAUVEGARDE ET LECTURE ICI !
         comments: [],
       };
     }) as CommunityPost[];
@@ -287,9 +286,16 @@ export const MockService = {
     ]);
   },
 
-  reactToPost: async () => {
-    console.log("Reactions à implémenter");
+  reactToPost: async (postId: string, newReactions: any) => {
+    // ENVOI À LA BASE DE DONNÉES !
+    const { error } = await supabase
+      .from("posts")
+      .update({ reactions: newReactions })
+      .eq("id", postId);
+
+    if (error) console.error("Erreur sauvegarde réaction:", error.message);
   },
+
   getComments: async () => [],
 
   // ==========================================
@@ -321,7 +327,6 @@ export const MockService = {
     if (error || !data || data.length === 0) {
       return { id: "0", texte: "Respirez.", auteur: "Lyloo" };
     }
-    // Choisir une citation au hasard parmi celles disponibles
     const randomIndex = Math.floor(Math.random() * data.length);
     const randomQuote = data[randomIndex];
 
