@@ -31,14 +31,28 @@ export const ActivityDetail: React.FC<ActivityDetailProps> = ({ activity, onClos
   const [isActive, setIsActive] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
   const [favAnimate, setFavAnimate] = useState(false);
+  const [showVideo, setShowVideo] = useState(false); // <-- NEW: State to control the video player
   
   const [relatedActivities, setRelatedActivities] = useState<Activity[]>([]);
   const [nextActivity, setNextActivity] = useState<Activity | null>(null);
+
+  // --- NEW: Helper function to generate clean YouTube Embed URLs ---
+  const getYouTubeEmbedUrl = (url: string) => {
+    if (!url) return '';
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    if (match && match[2].length === 11) {
+      // modestbranding=1 removes the YouTube logo, rel=0 prevents random suggested videos, autoplay=1 starts it immediately
+      return `https://www.youtube.com/embed/${match[2]}?modestbranding=1&rel=0&autoplay=1`;
+    }
+    return url;
+  };
 
   useEffect(() => {
     setIsFavorite(activity.estFavori);
     setSessionMode(false);
     setIsActive(false);
+    setShowVideo(false); // Reset video state when opening a new activity
     setTimeLeft(activity.dureeMinutes * 60);
     
     MockService.getActivities().then(all => {
@@ -46,7 +60,6 @@ export const ActivityDetail: React.FC<ActivityDetailProps> = ({ activity, onClos
             .filter(a => 
                 a.id !== activity.id && 
                 a.type === activity.type && 
-                // THE FIX: Added safe fallback arrays (|| []) to prevent crashes!
                 (a.categorie === activity.categorie || (a.tags || []).some(t => (activity.tags || []).includes(t)))
             )
             .slice(0, 5);
@@ -193,20 +206,24 @@ export const ActivityDetail: React.FC<ActivityDetailProps> = ({ activity, onClos
             <X size={24} />
         </button>
 
-        <div className="relative h-72 w-full flex-shrink-0">
+        <div className="relative h-72 w-full flex-shrink-0 group">
             <WellnessCardImage src={activity.imageUrl} alt={activity.titre} category={activity.categorie} className="w-full h-full" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
             
-            {activity.contentUrl && (
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <div className="w-16 h-16 bg-white/30 backdrop-blur-sm rounded-full flex items-center justify-center text-white animate-pulse">
-                        <Play size={32} fill="currentColor" />
+            {/* UPDATED: The pulsing play button on the image now triggers the inline video! */}
+            {activity.contentUrl && !showVideo && (
+                <div 
+                    className="absolute inset-0 flex items-center justify-center cursor-pointer"
+                    onClick={() => setShowVideo(true)}
+                >
+                    <div className="w-16 h-16 bg-white/30 backdrop-blur-sm rounded-full flex items-center justify-center text-white animate-pulse hover:scale-110 hover:bg-white/40 transition-all">
+                        <Play size={32} fill="currentColor" className="ml-1" />
                     </div>
                 </div>
             )}
 
-            <div className="absolute bottom-0 left-0 right-0 p-6">
-                <div className="flex justify-between items-end mb-3">
+            <div className="absolute bottom-0 left-0 right-0 p-6 pointer-events-none">
+                <div className="flex justify-between items-end mb-3 pointer-events-auto">
                     <span className="inline-block px-3 py-1 rounded-full bg-lyloo-vertEau text-lyloo-anthracite text-xs font-bold uppercase tracking-wide shadow-sm">{activity.categorie}</span>
                     <Tooltip content="Partager">
                         <button onClick={handleShare} className="p-2 bg-white/20 hover:bg-white/40 rounded-full text-white backdrop-blur-md transition-colors"><Share2 size={20} /></button>
@@ -233,12 +250,28 @@ export const ActivityDetail: React.FC<ActivityDetailProps> = ({ activity, onClos
                 )}
             </div>
 
+            {/* UPDATED: The Video Player Section */}
             {activity.contentUrl && (
-                <a href={activity.contentUrl} target="_blank" rel="noopener noreferrer" className="block w-full">
-                    <Button className="w-full bg-red-500 hover:bg-red-600 text-white shadow-md">
-                        <Video size={20} /> Regarder la vidéo
-                    </Button>
-                </a>
+                <div className="w-full">
+                    {!showVideo ? (
+                        <Button 
+                            onClick={() => setShowVideo(true)} 
+                            className="w-full bg-red-500 hover:bg-red-600 text-white shadow-md"
+                        >
+                            <Video size={20} /> Regarder la vidéo
+                        </Button>
+                    ) : (
+                        <div className="relative w-full rounded-2xl overflow-hidden shadow-lg bg-black animate-in fade-in zoom-in-95 duration-300" style={{ paddingTop: '56.25%' }}>
+                            <iframe 
+                                className="absolute top-0 left-0 w-full h-full border-0"
+                                src={getYouTubeEmbedUrl(activity.contentUrl)} 
+                                title={activity.titre}
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                allowFullScreen
+                            />
+                        </div>
+                    )}
+                </div>
             )}
 
             <div className="space-y-2">
