@@ -7,7 +7,6 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
-// Les 5 liens Google Sheets (Physique, Mental, Recettes, Produits, Challenges)
 const URLS = {
   physique:
     "https://docs.google.com/spreadsheets/d/e/2PACX-1vQH1LrtQULQ9FON_QKgG9tohAPpXunPNTBnawcxHAT8W_nUMXeUaagSWmD6fndtXu6Dk1zc54jNzo5J/pub?gid=351802395&single=true&output=csv",
@@ -21,10 +20,13 @@ const URLS = {
     "https://docs.google.com/spreadsheets/d/e/2PACX-1vQH1LrtQULQ9FON_QKgG9tohAPpXunPNTBnawcxHAT8W_nUMXeUaagSWmD6fndtXu6Dk1zc54jNzo5J/pub?gid=337547159&single=true&output=csv",
 };
 
-// Fonction intelligente : lit les noms des colonnes pour s'adapter à n'importe quel ordre !
 async function fetchAndParseCsvDynamic(url: string) {
   const response = await fetch(url);
-  const text = await response.text();
+  let text = await response.text();
+
+  // THE FIX: Strip the invisible BOM character from the start of the file
+  text = text.replace(/^\uFEFF/, "");
+
   const lines = text.split("\n").filter((line) => line.trim() !== "");
   if (lines.length === 0) return [];
 
@@ -41,7 +43,7 @@ async function fetchAndParseCsvDynamic(url: string) {
       obj[h] = values[i] || "";
     });
     return obj;
-  }).filter((obj) => obj.id && obj.id !== ""); // Ne garder que les lignes avec un ID
+  }).filter((obj) => obj.id && obj.id !== "");
 }
 
 serve(async (req) => {
@@ -55,7 +57,6 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
     );
 
-    // 1. Téléchargement des 5 fichiers CSV en parallèle (Ultra rapide)
     const [physique, mental, recettes, produits, challenges] = await Promise
       .all([
         fetchAndParseCsvDynamic(URLS.physique),
@@ -65,7 +66,6 @@ serve(async (req) => {
         fetchAndParseCsvDynamic(URLS.challenges),
       ]);
 
-    // 2. Formatage dynamique basé sur les entêtes
     const physRecords = physique.map((p) => ({
       id: p.id,
       discipline: p.discipline,
@@ -129,7 +129,6 @@ serve(async (req) => {
       image_url: c.image_url || c.image,
     }));
 
-    // 3. Sauvegarde dans Supabase
     await Promise.all([
       supabaseClient.from("physical_activities").upsert(physRecords, {
         onConflict: "id",

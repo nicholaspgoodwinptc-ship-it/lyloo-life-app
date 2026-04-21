@@ -1,12 +1,13 @@
-
 import React from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, ChefHat } from 'lucide-react';
 import { Tooltip, MentalIcon, PhysicalIcon, HomeIcon, CommunityIcon, SuiviIcon, ShopIcon } from './ui/LayoutComponents';
 
+// Ajout du menu Nutrition avec l'icône ChefHat
 const NAV_ITEMS = [
   { path: '/mental', label: 'Mental', icon: MentalIcon },
   { path: '/physique', label: 'Physique', icon: PhysicalIcon },
+  { path: '/nutrition', label: 'Nutrition', icon: ChefHat },
   { path: '/', label: 'Accueil', icon: HomeIcon },
   { path: '/boutique', label: 'Boutique', icon: ShopIcon },
   { path: '/communaute', label: 'Communauté', icon: CommunityIcon },
@@ -26,10 +27,13 @@ export const BottomTabBar: React.FC = () => {
             <NavLink
               key={item.path}
               to={item.path}
-              className={({ isActive }) => `
-                flex flex-col items-center justify-center transition-all duration-300 p-2 flex-1
-                ${isActive ? 'scale-110 -translate-y-1' : 'opacity-60 hover:opacity-100'}
-              `}
+              className={({ isActive }) =>
+                `flex flex-col items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full transition-all duration-300 ${
+                  isActive
+                    ? 'scale-110 -translate-y-4 bg-lyloo-anthracite shadow-[0_8px_16px_rgba(0,0,0,0.5)] border-2 border-lyloo-vertEau z-10'
+                    : 'hover:scale-110 hover:-translate-y-1 hover:bg-white/10 text-white/50'
+                }`
+              }
             >
               {({ isActive }) => {
                  const iconColor = '#f5f2e6';
@@ -66,7 +70,7 @@ export const Header: React.FC<{ title: string; rightAction?: React.ReactNode }> 
         </button>
         <h1 className="font-bold text-lg text-lyloo-anthracite dark:text-lyloo-beige">{title}</h1>
       </div>
-      {rightAction}
+      {rightAction && <div>{rightAction}</div>}
     </div>
   );
 };

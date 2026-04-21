@@ -9,6 +9,7 @@ import Auth from './pages/Auth';
 import Onboarding from './pages/Onboarding';
 import MentalWellness from './pages/MentalWellness';
 import PhysicalWellness from './pages/PhysicalWellness';
+import Nutrition from './pages/Nutrition'; // NOUVEAU: Import de la page Nutrition
 import Community from './pages/Community';
 import Suivi from './pages/Suivi';
 import Profile from './pages/Profile';
@@ -34,6 +35,7 @@ const App: React.FC = () => {
             <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
             <Route path="/mental" element={<ProtectedRoute><MentalWellness /></ProtectedRoute>} />
             <Route path="/physique" element={<ProtectedRoute><PhysicalWellness /></ProtectedRoute>} />
+            <Route path="/nutrition" element={<ProtectedRoute><Nutrition /></ProtectedRoute>} /> {/* NOUVEAU: Route Nutrition */}
             <Route path="/communaute" element={<ProtectedRoute><Community /></ProtectedRoute>} />
             <Route path="/suivi" element={<ProtectedRoute><Suivi /></ProtectedRoute>} />
             <Route path="/boutique" element={<ProtectedRoute><Shop /></ProtectedRoute>} />
