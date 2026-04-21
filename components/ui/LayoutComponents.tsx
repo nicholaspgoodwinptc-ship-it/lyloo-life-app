@@ -1,10 +1,10 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { Menu, ImageOff, User, Search, Bell, X, ChevronRight, Clock } from 'lucide-react';
+import { Menu, ImageOff, User, Search, Bell, X, ChevronRight, Clock, CheckCircle, BellRing, MessageSquare } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { MockService } from '../../services/mockService';
 import { Activity, Product, Notification } from '../../types';
+import { supabase } from '../../services/supabaseClient';
 
 // --- ICONS ---
 
@@ -57,8 +57,8 @@ export const CommunityIcon: React.FC<{ size?: number; color?: string; className?
 export const SuiviIcon: React.FC<{ size?: number; color?: string; className?: string }> = ({ size = 24, color = "currentColor", className = "" }) => (
   <svg width={size} height={size} viewBox="0 0 283.46 283.46" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
     <g id="SuiviIcon-Suivi_Beige">
-    <path  d="M87.86,190.46c-.4.08-1.62.53-2.78,1.54-1.65,1.45-1.7,3.9-1.71,4.85-.07,3.47,1.54,12,10.28,21.56,3.9,4.27,7.22,7.81,12.99,9.71,2.05.67,6.88,2.19,12.71.57,5.84-1.63,9.21-5.44,10.42-6.85,4.44-5.17,5.14-10.75,6-17.56,0,0,.97-7.76-2-18.27-.24-.86-.65-1.78-1.43-2.57-.72-.73-1.47-1.05-1.71-1.14-1.67-.66,3.69-.51-4.18-.34-20.97,5-34.94,7.72-38.59,8.5Z" fill={color}/>
-    <path  d="M92.3,179.43c-1.04.17-3.74.12-5.57-.18,0,0-2.95-.47-5.71-2.28-4.73-3.1-7.01-9.3-7.71-11.28-3.01-8.49-6.31-17.78-6.71-32.12-.27-9.78.97-15.8,1.43-17.85,1.1-4.91,2.1-9.16,5.28-13.85,1.34-1.98,5.05-7.28,12.14-10.42,1.67-.74,5.13-2.28,9.42-2.28,10.37-.02,17.77,8.89,20.7,12.42,6.13,7.38,8.02,14.66,10.71,24.98,2.58,9.93,3.85,20.68,4.14,25.27,1,15.99-6.36,19.85-7,20.13-7.42,3.28-20.42,6.46-31.12,7.46Z" fill={color}/>
+    <path  d="M87.86,190.46c-.4.08-1.62.53-2.78,1.54-1.65,1.45-1.7,3.9-1.71,4.85-.07,3.47,1.54,12,10.28,21.56,3.9,4.27,7.22,7.81,12.99,9.71,2.05.67,6.88,2.19,12.71.57,5.84-1.63,9.21-5.44,10.42-6.85,4.44-5.17,5.14-10.75,6-17.56,0,0-.97-7.76-2-18.27-.24-.86-.65-1.78-1.43-2.57-.72-.73-1.47-1.05-1.71-1.14-1.67-.66,3.69-.51-4.18-.34-20.97,5-34.94,7.72-38.59,8.5Z" fill={color}/>
+    <path  d="M92.3,179.43c-1.04.17-3.74.12-5.57-.18,0,0-2.95-.47-5.71-2.28-4.73-3.1-7.01-9.3-7.71-11.28-3.01-8.49-6.31-17.78-6.71-32.12-.27-9.78.97-15.8,1.43-17.85,1.1-4.91,2.1-9.16,5.28-13.85,1.34-1.98,5.05-7.28-12.14-10.42,1.67-.74,5.13-2.28,9.42-2.28,10.37-.02,17.77,8.89,20.7,12.42,6.13,7.38,8.02,14.66,10.71,24.98,2.58,9.93,3.85,20.68,4.14,25.27-1,15.99-6.36,19.85-7,20.13-7.42,3.28-20.42,6.46-31.12,7.46Z" fill={color}/>
     <path  d="M195.61,155.34c.4.08,1.62.53,2.78,1.54,1.65,1.45,1.7,3.9,1.71,4.85.07,3.47-1.54,12-10.28,21.56-3.9,4.27-7.22,7.81-12.99,9.71,2.05.67-6.88,2.19-12.71.57-5.84-1.63-9.21-5.44-10.42-6.85-4.44-5.17-5.14-10.75-6-17.56,0,0-.97-7.76,2-18.27.24-.86.65-1.78,1.43-2.57.72-.73,1.47-1.05,1.71-1.14,1.67-.66,3.69-.51,4.18-.34,20.97,5,34.94,7.72,38.59,8.5Z" fill={color}/>
     <path  d="M191.16,144.31c1.04.17,3.74.12,5.57-.18,0,0,2.95-.47,5.71-2.28,4.73-3.1,7.01-9.3,7.71-11.28,3.01-8.49,6.31-17.78,6.71-32.12.27-9.78-.97-15.8-1.43-17.85-1.1-4.91-2.1-9.16-5.28-13.85-1.34-1.98-5.05-7.28-12.14-10.42-1.67-.74-5.13-2.28-9.42-2.28-10.37-.02-17.77,8.89-20.7,12.42-6.13,7.38-8.02,14.66-10.71,24.98-2.58,9.93-3.85,20.68-4.14,25.27-1,15.99,6.36,19.85,7,20.13,7.42,3.28,20.42,6.46,31.12,7.46Z" fill={color}/>    </g>
   </svg>
@@ -292,24 +292,32 @@ export const WaveHeader: React.FC<{
     return '#a5cdbc';
   };
 
-  // Scroll Listener
+  const fetchNotifications = async () => {
+    const data = await MockService.getNotifications();
+    const sorted = data.sort((a, b) => {
+        if (a.read === b.read) {
+            return new Date(b.date).getTime() - new Date(a.date).getTime();
+        }
+        return a.read ? 1 : -1;
+    });
+    setNotifications(sorted);
+  };
+
+  // Scroll & Outside Click Listener
   useEffect(() => {
     const handleScroll = () => {
         setIsScrolled(window.scrollY > 20);
     };
     window.addEventListener('scroll', handleScroll);
     
-    // Notification & Click Outside Logic
     const handleClickOutside = (event: MouseEvent) => {
         if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
             setIsSearchOpen(false);
         }
-        if (notifRef.current && !notifRef.current.contains(event.target as Node)) {
-            setShowNotifications(false);
-        }
     };
     document.addEventListener('mousedown', handleClickOutside);
-    MockService.getNotifications().then(setNotifications);
+    
+    fetchNotifications();
     
     return () => {
         window.removeEventListener('scroll', handleScroll);
@@ -323,6 +331,20 @@ export const WaveHeader: React.FC<{
       }
   };
 
+  // Database Mark as Read Logic
+  const markAsRead = async (id: string) => {
+    setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
+    await supabase.from('notifications').update({ read: true }).eq('id', id);
+  };
+
+  const markAllAsRead = async () => {
+    const unreadIds = notifications.filter(n => !n.read).map(n => n.id);
+    if (unreadIds.length === 0) return;
+
+    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+    await supabase.from('notifications').update({ read: true }).in('id', unreadIds);
+  };
+
   const unreadCount = notifications.filter(n => !n.read).length;
 
   return (
@@ -332,7 +354,6 @@ export const WaveHeader: React.FC<{
     >
       
       {/* BACKGROUND LAYER - Asymmetric curve: High Left, Low Right */}
-      {/* Container must be h-[100%] or taller relative to the *initial* header size to show the full wave */}
       <div 
         className={`absolute inset-0 pointer-events-none overflow-hidden transition-opacity duration-500`}
         style={{ height: '100%', opacity: isScrolled ? 0 : 1 }}
@@ -401,30 +422,65 @@ export const WaveHeader: React.FC<{
                 {/* Notifications Logic */}
                 <div ref={notifRef} className="relative">
                     <Tooltip content="Notifications" position="bottom" align="end">
-                        <button onClick={() => setShowNotifications(!showNotifications)} className="p-2.5 bg-white/30 backdrop-blur-sm rounded-full hover:bg-white/50 hover:scale-110 transition-all text-lyloo-anthracite dark:text-lyloo-beige shadow-sm">
-                            <Bell size={22} />
+                        <button onClick={(e) => { e.stopPropagation(); setShowNotifications(!showNotifications); }} className="p-2.5 bg-white/30 backdrop-blur-sm rounded-full hover:bg-white/50 hover:scale-110 transition-all text-lyloo-anthracite dark:text-lyloo-beige shadow-sm relative">
+                            <Bell size={22} className={unreadCount > 0 ? "animate-pulse text-lyloo-terracotta" : ""} />
                             {unreadCount > 0 && (
-                                <span className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border border-white"></span>
+                                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-white animate-in zoom-in">
+                                    {unreadCount}
+                                </span>
                             )}
                         </button>
                     </Tooltip>
 
+                    {/* SLIDE-OUT NOTIFICATIONS PANEL */}
                     {showNotifications && (
-                        <div className="absolute top-full right-0 mt-4 w-72 bg-white dark:bg-stone-800 rounded-2xl shadow-2xl p-4 animate-in fade-in zoom-in-95 origin-top-right border border-stone-100 dark:border-stone-700 z-50">
-                            <div className="flex justify-between items-center mb-3">
-                                <h3 className="font-bold text-lyloo-anthracite dark:text-lyloo-beige text-sm">Notifications</h3>
-                                {unreadCount > 0 && <span className="text-[10px] bg-lyloo-vertEau px-2 py-0.5 rounded-full font-bold">{unreadCount}</span>}
-                            </div>
-                            <div className="space-y-2 max-h-64 overflow-y-auto no-scrollbar">
-                                {notifications.length > 0 ? notifications.map(n => (
-                                    <div key={n.id} className={`p-3 rounded-xl flex gap-3 ${n.read ? 'bg-stone-50 dark:bg-stone-900 opacity-60' : 'bg-lyloo-vertPale/20 dark:bg-lyloo-vertPale/10'}`}>
-                                        <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${n.read ? 'bg-stone-300' : 'bg-lyloo-orange'}`}></div>
-                                        <div>
-                                            <h4 className="text-sm font-bold text-lyloo-anthracite dark:text-lyloo-beige leading-tight">{n.title}</h4>
-                                            <p className="text-stone-600 dark:text-stone-400 text-[10px] mt-0.5">{n.message}</p>
+                        <div className="fixed inset-0 z-[100] flex justify-end text-left" onClick={(e) => e.stopPropagation()}>
+                            {/* Dark backdrop */}
+                            <div className="absolute inset-0 bg-black/40 backdrop-blur-sm animate-in fade-in" onClick={() => setShowNotifications(false)}></div>
+                            
+                            {/* Drawer */}
+                            <div className="relative w-full max-w-sm bg-[#f2efe4] dark:bg-stone-900 h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-300 cursor-default">
+                                
+                                {/* Drawer Header */}
+                                <div className="p-6 bg-lyloo-anthracite text-white flex justify-between items-center rounded-bl-[32px] shadow-md z-10">
+                                    <h2 className="text-xl font-bold flex items-center gap-2"><Bell size={20} /> Notifications</h2>
+                                    <button onClick={() => setShowNotifications(false)} className="p-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors"><X size={20} /></button>
+                                </div>
+
+                                {/* Notification List */}
+                                <div className="flex-1 overflow-y-auto p-4 space-y-3 no-scrollbar relative">
+                                    {unreadCount > 0 && (
+                                        <div className="flex justify-end mb-4">
+                                            <button onClick={markAllAsRead} className="text-xs font-bold text-lyloo-terracotta hover:text-lyloo-orange transition-colors flex items-center gap-1 bg-white dark:bg-stone-800 px-3 py-1.5 rounded-full shadow-sm">
+                                                <CheckCircle size={14} /> Tout marquer comme lu
+                                            </button>
                                         </div>
-                                    </div>
-                                )) : <p className="text-center text-xs text-stone-400 py-4">Aucune notification.</p>}
+                                    )}
+
+                                    {notifications.length === 0 ? (
+                                        <div className="h-full flex flex-col items-center justify-center text-stone-400 opacity-70">
+                                            <BellRing size={48} className="mb-4 opacity-50" />
+                                            <p className="font-medium">Aucune notification</p>
+                                        </div>
+                                    ) : (
+                                        notifications.map(notif => (
+                                            <div
+                                                key={notif.id}
+                                                onClick={() => markAsRead(notif.id)}
+                                                className={`p-4 rounded-2xl flex gap-4 cursor-pointer transition-all duration-300 ${notif.read ? 'bg-white/40 dark:bg-stone-800/40 opacity-60' : 'bg-white dark:bg-stone-800 shadow-md border border-lyloo-vertEau/40 hover:scale-[1.02]'}`}
+                                            >
+                                                <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 shadow-inner ${notif.type === 'community' ? 'bg-lyloo-terracotta/20 text-lyloo-terracotta' : 'bg-lyloo-vertEau/30 text-lyloo-anthracite'}`}>
+                                                    {notif.type === 'community' ? <MessageSquare size={18} /> : <BellRing size={18} />}
+                                                </div>
+                                                <div className="flex-1">
+                                                    <h4 className={`text-sm ${notif.read ? 'font-medium text-stone-500' : 'font-bold text-lyloo-anthracite dark:text-lyloo-beige'}`}>{notif.title || 'Lyloo'}</h4>
+                                                    <p className="text-xs text-stone-500 dark:text-stone-400 mt-1 leading-relaxed">{notif.message}</p>
+                                                </div>
+                                                {!notif.read && <div className="w-2 h-2 bg-lyloo-terracotta rounded-full mt-2 shadow-sm animate-pulse"></div>}
+                                            </div>
+                                        ))
+                                    )}
+                                </div>
                             </div>
                         </div>
                     )}

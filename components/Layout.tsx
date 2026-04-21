@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Sidebar, BottomTabBar } from './Navigation';
 import { Outlet, useLocation } from 'react-router-dom';
@@ -13,7 +12,7 @@ const Layout: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-lyloo-bg flex">
+    <div className="min-h-screen bg-lyloo-bg flex overflow-x-hidden">
       <ScrollToTop />
       <Sidebar />
       <main className="flex-1 w-full max-w-[100vw] overflow-x-hidden">
