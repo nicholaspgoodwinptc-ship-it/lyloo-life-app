@@ -36,7 +36,7 @@ const Community: React.FC = () => {
         setIsPosting(true);
         
         const authorName = user.first_name?.trim() || 'Moi';
-        
+
         await MockService.addPost({
             content: newPostContent,
             type: 'message',
@@ -148,11 +148,14 @@ const Community: React.FC = () => {
 
                         {/* Posts List */}
                         <div className="space-y-4">
-                            {posts.map(post => {
-                                // THE FIX: A bulletproof check to see if this post belongs to you
-                                const myName = user?.first_name?.trim();
+                            {posts.map((post) => {
+                                // Clean, bulletproof check without traces
+                                const myFirstName = user?.first_name?.trim();
+                                const myFullName = `${user?.first_name || ''} ${user?.last_name || ''}`.trim();
+                                
                                 const isMyPost = 
-                                    (myName && post.author === myName) || 
+                                    (myFirstName && post.author === myFirstName) || 
+                                    (myFullName && post.author === myFullName) || 
                                     post.author === 'Moi' || 
                                     post.author === 'Vous' || 
                                     post.author === 'Lyloo' || 
