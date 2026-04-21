@@ -57,10 +57,10 @@ export const CommunityIcon: React.FC<{ size?: number; color?: string; className?
 export const SuiviIcon: React.FC<{ size?: number; color?: string; className?: string }> = ({ size = 24, color = "currentColor", className = "" }) => (
   <svg width={size} height={size} viewBox="0 0 283.46 283.46" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
     <g id="SuiviIcon-Suivi_Beige">
-    <path  d="M87.86,190.46c-.4.08-1.62.53-2.78,1.54-1.65,1.45-1.7,3.9-1.71,4.85-.07,3.47,1.54,12,10.28,21.56,3.9,4.27,7.22,7.81,12.99,9.71,2.05.67,6.88,2.19,12.71.57,5.84-1.63,9.21-5.44,10.42-6.85,4.44-5.17,5.14-10.75,6-17.56,0,0-.97-7.76-2-18.27-.24-.86-.65-1.78-1.43-2.57-.72-.73-1.47-1.05-1.71-1.14-1.67-.66,3.69-.51-4.18-.34-20.97,5-34.94,7.72-38.59,8.5Z" fill={color}/>
-    <path  d="M92.3,179.43c-1.04.17-3.74.12-5.57-.18,0,0-2.95-.47-5.71-2.28-4.73-3.1-7.01-9.3-7.71-11.28-3.01-8.49-6.31-17.78-6.71-32.12-.27-9.78.97-15.8,1.43-17.85,1.1-4.91,2.1-9.16,5.28-13.85,1.34-1.98,5.05-7.28-12.14-10.42,1.67-.74,5.13-2.28,9.42-2.28,10.37-.02,17.77,8.89,20.7,12.42,6.13,7.38,8.02,14.66,10.71,24.98,2.58,9.93,3.85,20.68,4.14,25.27-1,15.99-6.36,19.85-7,20.13-7.42,3.28-20.42,6.46-31.12,7.46Z" fill={color}/>
-    <path  d="M195.61,155.34c.4.08,1.62.53,2.78,1.54,1.65,1.45,1.7,3.9,1.71,4.85.07,3.47-1.54,12-10.28,21.56-3.9,4.27-7.22,7.81-12.99,9.71,2.05.67-6.88,2.19-12.71.57-5.84-1.63-9.21-5.44-10.42-6.85-4.44-5.17-5.14-10.75-6-17.56,0,0-.97-7.76,2-18.27.24-.86.65-1.78,1.43-2.57.72-.73,1.47-1.05,1.71-1.14,1.67-.66,3.69-.51,4.18-.34,20.97,5,34.94,7.72,38.59,8.5Z" fill={color}/>
-    <path  d="M191.16,144.31c1.04.17,3.74.12,5.57-.18,0,0,2.95-.47,5.71-2.28,4.73-3.1,7.01-9.3,7.71-11.28,3.01-8.49,6.31-17.78,6.71-32.12.27-9.78-.97-15.8-1.43-17.85-1.1-4.91-2.1-9.16-5.28-13.85-1.34-1.98-5.05-7.28-12.14-10.42-1.67-.74-5.13-2.28-9.42-2.28-10.37-.02-17.77,8.89-20.7,12.42-6.13,7.38-8.02,14.66-10.71,24.98-2.58,9.93-3.85,20.68-4.14,25.27-1,15.99,6.36,19.85,7,20.13,7.42,3.28,20.42,6.46,31.12,7.46Z" fill={color}/>    </g>
+      <path d="M87.86,190.46c-.4.08-1.62.53-2.78,1.54-1.65,1.45-1.7,3.9-1.71,4.85-.07,3.47,1.54,12,10.28,21.56,3.9,4.27,7.22,7.81,12.99,9.71,2.05.67,6.88,2.19,12.71.57,5.84-1.63,9.21-5.44,10.42-6.85,4.44-5.17,5.14-10.75,6-17.56,0,0-.97-7.76-2-18.27-.24-.86-.65-1.78-1.43-2.57-.72-.73-1.47-1.05-1.71-1.14-1.67-.66,3.69-.51-4.18-.34-20.97,5-34.94,7.72-38.59,8.5Z" fill={color} />
+      <path d="M92.3,179.43c-1.04.17-3.74.12-5.57-.18,0,0-2.95-.47-5.71-2.28-4.73-3.1-7.01-9.3-7.71-11.28-3.01-8.49-6.31-17.78-6.71-32.12-.27-9.78.97-15.8,1.43-17.85,1.1-4.91,2.1-9.16,5.28-13.85,1.34-1.98,5.05-7.28-12.14-10.42,1.67-.74,5.13-2.28,9.42-2.28,10.37-.02,17.77,8.89,20.7,12.42,6.13,7.38,8.02,14.66,10.71,24.98,2.58,9.93,3.85,20.68,4.14,25.27-1,15.99-6.36,19.85-7,20.13-7.42,3.28-20.42,6.46-31.12,7.46Z" fill={color} />
+      <path d="M195.61,155.34c.4.08,1.62.53,2.78,1.54,1.65,1.45,1.7,3.9,1.71,4.85.07,3.47-1.54,12-10.28,21.56-3.9,4.27-7.22,7.81-12.99,9.71,2.05.67-6.88,2.19-12.71.57-5.84-1.63-9.21-5.44-10.42-6.85-4.44-5.17-5.14-10.75-6-17.56,0,0-.97-7.76,2-18.27.24-.86.65-1.78,1.43-2.57.72-.73,1.47-1.05,1.71-1.14,1.67-.66,3.69-.51,4.18-.34,20.97,5,34.94,7.72,38.59,8.5Z" fill={color} />
+      <path d="M191.16,144.31c1.04.17,3.74.12,5.57-.18,0,0,2.95-.47,5.71-2.28,4.73-3.1,7.01-9.3,7.71-11.28,3.01-8.49,6.31-17.78,6.71-32.12.27-9.78-.97-15.8-1.43-17.85-1.1-4.91-2.1-9.16-5.28-13.85-1.34-1.98-5.05-7.28-12.14-10.42-1.67-.74-5.13-2.28-9.42-2.28-10.37-.02-17.77,8.89-20.7,12.42-6.13,7.38-8.02,14.66-10.71,24.98-2.58,9.93-3.85,20.68-4.14,25.27-1,15.99,6.36,19.85,7,20.13,7.42,3.28,20.42,6.46,31.12,7.46Z" fill={color} />    </g>
   </svg>
 );
 
@@ -82,33 +82,33 @@ export const ScrollToTop: React.FC = () => {
   return null;
 };
 
-export const Button: React.FC<React.ButtonHTMLAttributes<HTMLButtonElement> & { variant?: 'primary' | 'secondary' | 'outline' | 'ghost', size?: 'sm' | 'md' | 'lg' }> = 
+export const Button: React.FC<React.ButtonHTMLAttributes<HTMLButtonElement> & { variant?: 'primary' | 'secondary' | 'outline' | 'ghost', size?: 'sm' | 'md' | 'lg' }> =
   ({ className = '', variant = 'primary', size = 'md', ...props }) => {
-  
-  const baseStyle = "font-sans font-bold transition-all duration-200 disabled:opacity-50 flex items-center justify-center gap-2 rounded-full hover:scale-105 active:scale-95";
-  
-  const sizes = {
-    sm: "px-4 py-2 text-sm",
-    md: "px-6 py-3 text-base",
-    lg: "px-8 py-4 text-lg"
-  };
 
-  const variants = {
-    primary: "bg-lyloo-anthracite text-lyloo-beige hover:bg-stone-800 dark:bg-lyloo-beige dark:text-lyloo-anthracite",
-    secondary: "bg-lyloo-vertEau text-lyloo-anthracite hover:opacity-90",
-    outline: "border-2 border-lyloo-anthracite text-lyloo-anthracite hover:bg-lyloo-anthracite/5 dark:border-lyloo-beige dark:text-lyloo-beige",
-    ghost: "text-lyloo-anthracite hover:bg-black/5 dark:text-lyloo-beige dark:hover:bg-white/10"
-  };
+    const baseStyle = "font-sans font-bold transition-all duration-200 disabled:opacity-50 flex items-center justify-center gap-2 rounded-full hover:scale-105 active:scale-95";
 
-  return <button className={`${baseStyle} ${sizes[size]} ${variants[variant]} ${className}`} {...props} />;
-};
+    const sizes = {
+      sm: "px-4 py-2 text-sm",
+      md: "px-6 py-3 text-base",
+      lg: "px-8 py-4 text-lg"
+    };
+
+    const variants = {
+      primary: "bg-lyloo-anthracite text-lyloo-beige hover:bg-stone-800 dark:bg-lyloo-beige dark:text-lyloo-anthracite",
+      secondary: "bg-lyloo-vertEau text-lyloo-anthracite hover:opacity-90",
+      outline: "border-2 border-lyloo-anthracite text-lyloo-anthracite hover:bg-lyloo-anthracite/5 dark:border-lyloo-beige dark:text-lyloo-beige",
+      ghost: "text-lyloo-anthracite hover:bg-black/5 dark:text-lyloo-beige dark:hover:bg-white/10"
+    };
+
+    return <button className={`${baseStyle} ${sizes[size]} ${variants[variant]} ${className}`} {...props} />;
+  };
 
 export const Card: React.FC<{ children: React.ReactNode, className?: string, onClick?: () => void, hoverable?: boolean }> = ({ children, className = '', onClick, hoverable }) => {
   const isInteractive = onClick || hoverable;
-  
+
   return (
-    <div 
-      onClick={onClick} 
+    <div
+      onClick={onClick}
       className={`
         bg-white dark:bg-lyloo-dark-bg rounded-[32px] shadow-sm border border-transparent dark:border-lyloo-beige p-4 group/card
         ${isInteractive ? 'cursor-pointer hover:scale-[1.01] hover:shadow-md transition-all duration-300' : ''} 
@@ -121,9 +121,9 @@ export const Card: React.FC<{ children: React.ReactNode, className?: string, onC
 };
 
 export const Input: React.FC<React.InputHTMLAttributes<HTMLInputElement>> = ({ className = '', ...props }) => (
-  <input 
-    className={`w-full px-6 py-3 rounded-full border border-stone-200 dark:border-stone-600 focus:border-lyloo-vertEau focus:ring-2 focus:ring-lyloo-vertEau/20 outline-none transition-all bg-white dark:bg-stone-800 dark:text-white ${className}`} 
-    {...props} 
+  <input
+    className={`w-full px-6 py-3 rounded-full border border-stone-200 dark:border-stone-600 focus:border-lyloo-vertEau focus:ring-2 focus:ring-lyloo-vertEau/20 outline-none transition-all bg-white dark:bg-stone-800 dark:text-white ${className}`}
+    {...props}
   />
 );
 
@@ -134,26 +134,26 @@ export const Badge: React.FC<{ children: React.ReactNode, className?: string }> 
 );
 
 export const Skeleton: React.FC<{ className?: string }> = ({ className = '' }) => (
-    <div className={`animate-pulse bg-stone-200 dark:bg-stone-700 rounded-2xl ${className}`}></div>
+  <div className={`animate-pulse bg-stone-200 dark:bg-stone-700 rounded-2xl ${className}`}></div>
 );
 
 export const Tooltip: React.FC<{ content: string; children: React.ReactNode; position?: 'top' | 'bottom'; align?: 'start' | 'center' | 'end' }> = ({ content, children, position = 'top', align = 'center' }) => {
-  
+
   const getPositionClasses = () => {
     let classes = "absolute z-[9999] px-3 py-2 bg-lyloo-anthracite text-lyloo-beige text-xs font-bold rounded-lg shadow-xl pointer-events-none transition-all duration-200 opacity-0 group-hover/tooltip:opacity-100 invisible group-hover/tooltip:visible transform min-w-max max-w-[200px] whitespace-normal text-center";
-    
+
     if (position === 'top') {
-        classes += " bottom-full mb-2 origin-bottom";
+      classes += " bottom-full mb-2 origin-bottom";
     } else {
-        classes += " top-full mt-2 origin-top";
+      classes += " top-full mt-2 origin-top";
     }
 
     if (align === 'center') {
-        classes += " left-1/2 -translate-x-1/2";
+      classes += " left-1/2 -translate-x-1/2";
     } else if (align === 'start') {
-        classes += " left-0";
+      classes += " left-0";
     } else if (align === 'end') {
-        classes += " right-0";
+      classes += " right-0";
     }
 
     return classes;
@@ -172,15 +172,15 @@ export const Tooltip: React.FC<{ content: string; children: React.ReactNode; pos
 
 export const BackgroundPattern: React.FC<{ className?: string, opacity?: number }> = ({ className = '', opacity = 0.05 }) => (
   <div className={`absolute inset-0 z-0 pointer-events-none overflow-hidden ${className}`}>
-      <svg className="absolute top-10 right-[-20px] w-64 h-64 text-lyloo-anthracite dark:text-lyloo-beige" style={{ opacity }} viewBox="0 0 100 100" fill="currentColor">
-         <path d="M50 50 L30 10 L40 10 L55 45 L70 10 L80 10 L55 60 L55 90 L45 90 L45 60 Z" />
-      </svg>
-      <svg className="absolute bottom-20 left-[-30px] w-80 h-80 text-lyloo-vertEau" style={{ opacity }} viewBox="0 0 100 100" fill="currentColor">
-          <circle cx="50" cy="50" r="40" />
-      </svg>
-      <svg className="absolute top-[40%] left-[20%] w-32 h-32 text-lyloo-terracotta" style={{ opacity: opacity * 0.8 }} viewBox="0 0 100 100" fill="currentColor">
-         <path d="M50 50 L30 10 L40 10 L55 45 L70 10 L80 10 L55 60 L55 90 L45 90 L45 60 Z" transform="rotate(-45 50 50)" />
-      </svg>
+    <svg className="absolute top-10 right-[-20px] w-64 h-64 text-lyloo-anthracite dark:text-lyloo-beige" style={{ opacity }} viewBox="0 0 100 100" fill="currentColor">
+      <path d="M50 50 L30 10 L40 10 L55 45 L70 10 L80 10 L55 60 L55 90 L45 90 L45 60 Z" />
+    </svg>
+    <svg className="absolute bottom-20 left-[-30px] w-80 h-80 text-lyloo-vertEau" style={{ opacity }} viewBox="0 0 100 100" fill="currentColor">
+      <circle cx="50" cy="50" r="40" />
+    </svg>
+    <svg className="absolute top-[40%] left-[20%] w-32 h-32 text-lyloo-terracotta" style={{ opacity: opacity * 0.8 }} viewBox="0 0 100 100" fill="currentColor">
+      <path d="M50 50 L30 10 L40 10 L55 45 L70 10 L80 10 L55 60 L55 90 L45 90 L45 60 Z" transform="rotate(-45 50 50)" />
+    </svg>
   </div>
 );
 
@@ -188,35 +188,35 @@ export const LylooIcon: React.FC<{ className?: string }> = ({ className = "" }) 
 
   <svg viewBox="0 0 100 60" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
 
-     <defs>
+    <defs>
 
-        <mask id="y-stripes-icon">
+      <mask id="y-stripes-icon">
 
-          <rect width="100%" height="100%" fill="white" />
+        <rect width="100%" height="100%" fill="white" />
 
-          <path d="M12 25 Q 16 23 20 19" stroke="black" strokeWidth="2.5" fill="none" />
+        <path d="M12 25 Q 16 23 20 19" stroke="black" strokeWidth="2.5" fill="none" />
 
-          <path d="M15 29 Q 19 27 23 23" stroke="black" strokeWidth="2.5" fill="none" />
+        <path d="M15 29 Q 19 27 23 23" stroke="black" strokeWidth="2.5" fill="none" />
 
-        </mask>
+      </mask>
 
-     </defs>
+    </defs>
 
-     <g transform="translate(10, 0)">
+    <g transform="translate(10, 0)">
 
-        <g mask="url(#y-stripes-icon)">
+      <g mask="url(#y-stripes-icon)">
 
-            <circle cx="30" cy="22" r="7" fill="currentColor" />
+        <circle cx="30" cy="22" r="7" fill="currentColor" />
 
-            <path d="M30 60 C 30 50 30 40 30 35 C 30 35 25 25 12 18" stroke="currentColor" strokeWidth="11" strokeLinecap="round" />
+        <path d="M30 60 C 30 50 30 40 30 35 C 30 35 25 25 12 18" stroke="currentColor" strokeWidth="11" strokeLinecap="round" />
 
-            <path d="M30 35 C 35 25 48 18 48 18" stroke="currentColor" strokeWidth="11" strokeLinecap="round" />
+        <path d="M30 35 C 35 25 48 18 48 18" stroke="currentColor" strokeWidth="11" strokeLinecap="round" />
 
-        </g>
+      </g>
 
-        <circle cx="70" cy="38" r="16" stroke="currentColor" strokeWidth="11" />
+      <circle cx="70" cy="38" r="16" stroke="currentColor" strokeWidth="11" />
 
-     </g>
+    </g>
 
   </svg>
 
@@ -263,23 +263,24 @@ export const LylooLogo: React.FC<{ className?: string }> = ({ className = "" }) 
   </svg>
 );
 
-export const WaveHeader: React.FC<{ 
-  title: React.ReactNode; 
-  subtitle?: string; 
-  onMenuClick?: () => void; 
+export const WaveHeader: React.FC<{
+  title: React.ReactNode;
+  subtitle?: string;
+  onMenuClick?: () => void;
   showLogo?: boolean;
   className?: string;
-  rightAction?: React.ReactNode; 
+  rightAction?: React.ReactNode;
   icon?: React.FC<{ size?: number; color?: string }>;
   subtitleClassName?: string;
 }> = ({ title, subtitle, onMenuClick, showLogo = true, className, rightAction, icon: Icon, subtitleClassName = "text-base sm:text-lg md:text-3xl italic tracking-wide opacity-90" }) => {
-  
+
+  const { user } = useAuth();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [showNotifications, setShowNotifications] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  
+
   const searchRef = useRef<HTMLDivElement>(null);
   const notifRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
@@ -295,10 +296,10 @@ export const WaveHeader: React.FC<{
   const fetchNotifications = async () => {
     const data = await MockService.getNotifications();
     const sorted = data.sort((a, b) => {
-        if (a.read === b.read) {
-            return new Date(b.date).getTime() - new Date(a.date).getTime();
-        }
-        return a.read ? 1 : -1;
+      if (a.read === b.read) {
+        return new Date(b.date).getTime() - new Date(a.date).getTime();
+      }
+      return a.read ? 1 : -1;
     });
     setNotifications(sorted);
   };
@@ -306,29 +307,29 @@ export const WaveHeader: React.FC<{
   // Scroll & Outside Click Listener
   useEffect(() => {
     const handleScroll = () => {
-        setIsScrolled(window.scrollY > 20);
+      setIsScrolled(window.scrollY > 20);
     };
     window.addEventListener('scroll', handleScroll);
-    
+
     const handleClickOutside = (event: MouseEvent) => {
-        if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
-            setIsSearchOpen(false);
-        }
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setIsSearchOpen(false);
+      }
     };
     document.addEventListener('mousedown', handleClickOutside);
-    
+
     fetchNotifications();
-    
+
     return () => {
-        window.removeEventListener('scroll', handleScroll);
-        document.removeEventListener('mousedown', handleClickOutside);
+      window.removeEventListener('scroll', handleScroll);
+      document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
 
   const scrollToTop = () => {
-      if (isScrolled) {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
+    if (isScrolled) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
 
   // Database Mark as Read Logic
@@ -348,193 +349,197 @@ export const WaveHeader: React.FC<{
   const unreadCount = notifications.filter(n => !n.read).length;
 
   return (
-    <div 
-        className={`fixed top-0 left-0 right-0 z-40 transition-all duration-500 ease-in-out ${isScrolled ? 'h-20 cursor-pointer' : 'h-56 md:h-64'}`}
-        onClick={scrollToTop}
+    <div
+      className={`fixed top-0 left-0 right-0 z-40 transition-all duration-500 ease-in-out ${isScrolled ? 'h-20 cursor-pointer' : 'h-56 md:h-64'}`}
+      onClick={scrollToTop}
     >
-      
+
       {/* BACKGROUND LAYER - Asymmetric curve: High Left, Low Right */}
-      <div 
+      <div
         className={`absolute inset-0 pointer-events-none overflow-hidden transition-opacity duration-500`}
         style={{ height: '100%', opacity: isScrolled ? 0 : 1 }}
       >
-          <svg 
-            className="w-full h-full block overflow-visible" 
-            viewBox="0 0 374.1732 210.8743" 
-            preserveAspectRatio="none" 
-            xmlns="http://www.w3.org/2000/svg"
-          >
-              <path 
-                d="M374.0976,161.477V0H0v194.5477s.7461-.2197.7461-.2197l.0108,1.9396c30.8761-9.9402,62.2675-15.1476,93.3009-15.4758,37.4056-.4013,64.0937,6.1738,92.3457,13.132,27.5497,6.785,56.0389,13.8022,95.0974,13.9755,32.8186.1505,59.7488-2.8408,92.6722-12.4435v-34.0001c-.0253.0072-.0503.014-.0756.0212Z"
-                fill={getFillColor()}
-              />
+        <svg
+          className="w-full h-full block overflow-visible"
+          viewBox="0 0 374.1732 210.8743"
+          preserveAspectRatio="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M374.0976,161.477V0H0v194.5477s.7461-.2197.7461-.2197l.0108,1.9396c30.8761-9.9402,62.2675-15.1476,93.3009-15.4758,37.4056-.4013,64.0937,6.1738,92.3457,13.132,27.5497,6.785,56.0389,13.8022,95.0974,13.9755,32.8186.1505,59.7488-2.8408,92.6722-12.4435v-34.0001c-.0253.0072-.0503.014-.0756.0212Z"
+            fill={getFillColor()}
+          />
+        </svg>
+        <div className="absolute inset-0 opacity-10 pointer-events-none">
+          <svg className="absolute -right-10 -top-10 w-64 h-64 text-white" viewBox="0 0 100 100" fill="currentColor">
+            <path d="M50 50 L30 10 L40 10 L55 45 L70 10 L80 10 L55 60 L55 90 L45 90 L45 60 Z" />
           </svg>
-          <div className="absolute inset-0 opacity-10 pointer-events-none">
-            <svg className="absolute -right-10 -top-10 w-64 h-64 text-white" viewBox="0 0 100 100" fill="currentColor">
-              <path d="M50 50 L30 10 L40 10 L55 45 L70 10 L80 10 L55 60 L55 90 L45 90 L45 60 Z" />
-            </svg>
-          </div>
+        </div>
       </div>
 
       {/* Solid Background for Scrolled State */}
-      <div 
+      <div
         className={`absolute inset-0 transition-opacity duration-500 shadow-md ${isScrolled ? 'opacity-100' : 'opacity-0'} ${bgClass}`}
         style={{ backdropFilter: 'blur(10px)' }}
       ></div>
 
       {/* INTERACTIVE CONTENT LAYER */}
       <div className="relative h-full flex flex-col justify-between px-6 max-w-5xl mx-auto w-full z-50">
-         
-         {/* Top Row: Logo & Actions */}
-         <div className={`flex items-center justify-between transition-all duration-500 ${isScrolled ? 'pt-4' : 'pt-6'}`}>
-             <div className="flex-shrink-0">
-                {showLogo && (
-                  <div 
-                    onClick={(e) => { e.stopPropagation(); navigate('/'); }} 
-                    className="cursor-pointer hover:scale-105 transition-transform"
-                  >
-                     <LylooLogo className={`w-auto text-lyloo-anthracite dark:text-lyloo-beige transition-all duration-500 ${isScrolled ? 'h-10' : 'h-24 md:h-32'}`} />
-                  </div>
-                )}
-             </div>
 
-             <div className="flex gap-2 flex-shrink-0 justify-end relative" onClick={(e) => e.stopPropagation()}>
-                {/* Search Bar Logic */}
-                <div ref={searchRef} className={`absolute top-0 right-20 bg-white rounded-full shadow-lg z-50 flex items-center px-4 py-2 transition-all duration-300 origin-top-right ${isSearchOpen ? 'opacity-100 scale-100 w-64' : 'opacity-0 scale-95 pointer-events-none w-0 p-0 overflow-hidden'}`}>
-                    <Search size={20} className="text-stone-400 mr-2 flex-shrink-0" />
-                    <input 
-                        autoFocus={isSearchOpen}
-                        type="text" 
-                        placeholder="Rechercher..." 
-                        className="flex-1 outline-none text-lyloo-anthracite font-medium bg-transparent min-w-0"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                    <button onClick={() => { setIsSearchOpen(false); setSearchQuery(''); }} className="flex-shrink-0"><X size={20} className="text-stone-400" /></button>
-                </div>
-                
-                <Tooltip content="Rechercher" position="bottom" align="end">
-                    <button onClick={() => setIsSearchOpen(true)} className="p-2.5 bg-white/30 backdrop-blur-sm rounded-full hover:bg-white/50 hover:scale-110 transition-all text-lyloo-anthracite dark:text-lyloo-beige shadow-sm">
-                        <Search size={22} />
-                    </button>
-                </Tooltip>
+        {/* Top Row: Logo & Actions */}
+        <div className={`flex items-center justify-between transition-all duration-500 ${isScrolled ? 'pt-4' : 'pt-6'}`}>
+          <div className="flex-shrink-0">
+            {showLogo && (
+              <div
+                onClick={(e) => { e.stopPropagation(); navigate('/'); }}
+                className="cursor-pointer hover:scale-105 transition-transform"
+              >
+                <LylooLogo className={`w-auto text-lyloo-anthracite dark:text-lyloo-beige transition-all duration-500 ${isScrolled ? 'h-10' : 'h-24 md:h-32'}`} />
+              </div>
+            )}
+          </div>
 
-                {/* Notifications Logic */}
-                <div ref={notifRef} className="relative">
-                    <Tooltip content="Notifications" position="bottom" align="end">
-                        <button onClick={(e) => { e.stopPropagation(); setShowNotifications(!showNotifications); }} className="p-2.5 bg-white/30 backdrop-blur-sm rounded-full hover:bg-white/50 hover:scale-110 transition-all text-lyloo-anthracite dark:text-lyloo-beige shadow-sm relative">
-                            <Bell size={22} className={unreadCount > 0 ? "animate-pulse text-lyloo-terracotta" : ""} />
-                            {unreadCount > 0 && (
-                                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-white animate-in zoom-in">
-                                    {unreadCount}
-                                </span>
-                            )}
-                        </button>
-                    </Tooltip>
+          <div className="flex gap-2 flex-shrink-0 justify-end relative" onClick={(e) => e.stopPropagation()}>
+            {/* Search Bar Logic */}
+            <div ref={searchRef} className={`absolute top-0 right-20 bg-white rounded-full shadow-lg z-50 flex items-center px-4 py-2 transition-all duration-300 origin-top-right ${isSearchOpen ? 'opacity-100 scale-100 w-64' : 'opacity-0 scale-95 pointer-events-none w-0 p-0 overflow-hidden'}`}>
+              <Search size={20} className="text-stone-400 mr-2 flex-shrink-0" />
+              <input
+                autoFocus={isSearchOpen}
+                type="text"
+                placeholder="Rechercher..."
+                className="flex-1 outline-none text-lyloo-anthracite font-medium bg-transparent min-w-0"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              <button onClick={() => { setIsSearchOpen(false); setSearchQuery(''); }} className="flex-shrink-0"><X size={20} className="text-stone-400" /></button>
+            </div>
 
-                    {/* SLIDE-OUT NOTIFICATIONS PANEL */}
-                    {showNotifications && (
-                        <div className="fixed inset-0 z-[100] flex justify-end text-left" onClick={(e) => e.stopPropagation()}>
-                            {/* Dark backdrop */}
-                            <div className="absolute inset-0 bg-black/40 backdrop-blur-sm animate-in fade-in" onClick={() => setShowNotifications(false)}></div>
-                            
-                            {/* Drawer */}
-                            <div className="relative w-full max-w-sm bg-[#f2efe4] dark:bg-stone-900 h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-300 cursor-default">
-                                
-                                {/* Drawer Header */}
-                                <div className="p-6 bg-lyloo-anthracite text-white flex justify-between items-center rounded-bl-[32px] shadow-md z-10">
-                                    <h2 className="text-xl font-bold flex items-center gap-2"><Bell size={20} /> Notifications</h2>
-                                    <button onClick={() => setShowNotifications(false)} className="p-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors"><X size={20} /></button>
-                                </div>
+            <Tooltip content="Rechercher" position="bottom" align="end">
+              <button onClick={() => setIsSearchOpen(true)} className="p-2.5 bg-white/30 backdrop-blur-sm rounded-full hover:bg-white/50 hover:scale-110 transition-all text-lyloo-anthracite dark:text-lyloo-beige shadow-sm">
+                <Search size={22} />
+              </button>
+            </Tooltip>
 
-                                {/* Notification List */}
-                                <div className="flex-1 overflow-y-auto p-4 space-y-3 no-scrollbar relative">
-                                    {unreadCount > 0 && (
-                                        <div className="flex justify-end mb-4">
-                                            <button onClick={markAllAsRead} className="text-xs font-bold text-lyloo-terracotta hover:text-lyloo-orange transition-colors flex items-center gap-1 bg-white dark:bg-stone-800 px-3 py-1.5 rounded-full shadow-sm">
-                                                <CheckCircle size={14} /> Tout marquer comme lu
-                                            </button>
-                                        </div>
-                                    )}
+            {/* Notifications Logic */}
+            <div ref={notifRef} className="relative">
+              <Tooltip content="Notifications" position="bottom" align="end">
+                <button onClick={(e) => { e.stopPropagation(); setShowNotifications(!showNotifications); }} className="p-2.5 bg-white/30 backdrop-blur-sm rounded-full hover:bg-white/50 hover:scale-110 transition-all text-lyloo-anthracite dark:text-lyloo-beige shadow-sm relative">
+                  <Bell size={22} className={unreadCount > 0 ? "animate-pulse text-lyloo-terracotta" : ""} />
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-white animate-in zoom-in">
+                      {unreadCount}
+                    </span>
+                  )}
+                </button>
+              </Tooltip>
 
-                                    {notifications.length === 0 ? (
-                                        <div className="h-full flex flex-col items-center justify-center text-stone-400 opacity-70">
-                                            <BellRing size={48} className="mb-4 opacity-50" />
-                                            <p className="font-medium">Aucune notification</p>
-                                        </div>
-                                    ) : (
-                                        notifications.map(notif => (
-                                            <div
-                                                key={notif.id}
-                                                onClick={() => markAsRead(notif.id)}
-                                                className={`p-4 rounded-2xl flex gap-4 cursor-pointer transition-all duration-300 ${notif.read ? 'bg-white/40 dark:bg-stone-800/40 opacity-60' : 'bg-white dark:bg-stone-800 shadow-md border border-lyloo-vertEau/40 hover:scale-[1.02]'}`}
-                                            >
-                                                <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 shadow-inner ${notif.type === 'community' ? 'bg-lyloo-terracotta/20 text-lyloo-terracotta' : 'bg-lyloo-vertEau/30 text-lyloo-anthracite'}`}>
-                                                    {notif.type === 'community' ? <MessageSquare size={18} /> : <BellRing size={18} />}
-                                                </div>
-                                                <div className="flex-1">
-                                                    <h4 className={`text-sm ${notif.read ? 'font-medium text-stone-500' : 'font-bold text-lyloo-anthracite dark:text-lyloo-beige'}`}>{notif.title || 'Lyloo'}</h4>
-                                                    <p className="text-xs text-stone-500 dark:text-stone-400 mt-1 leading-relaxed">{notif.message}</p>
-                                                </div>
-                                                {!notif.read && <div className="w-2 h-2 bg-lyloo-terracotta rounded-full mt-2 shadow-sm animate-pulse"></div>}
-                                            </div>
-                                        ))
-                                    )}
-                                </div>
+              {/* SLIDE-OUT NOTIFICATIONS PANEL */}
+              {showNotifications && (
+                <div className="fixed inset-0 z-[100] flex justify-end text-left" onClick={(e) => e.stopPropagation()}>
+                  {/* Dark backdrop */}
+                  <div className="absolute inset-0 bg-black/40 backdrop-blur-sm animate-in fade-in" onClick={() => setShowNotifications(false)}></div>
+
+                  {/* Drawer */}
+                  <div className="relative w-full max-w-sm bg-[#f2efe4] dark:bg-stone-900 h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-300 cursor-default">
+
+                    {/* Drawer Header */}
+                    <div className="p-6 bg-lyloo-anthracite text-white flex justify-between items-center rounded-bl-[32px] shadow-md z-10">
+                      <h2 className="text-xl font-bold flex items-center gap-2"><Bell size={20} /> Notifications</h2>
+                      <button onClick={() => setShowNotifications(false)} className="p-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors"><X size={20} /></button>
+                    </div>
+
+                    {/* Notification List */}
+                    <div className="flex-1 overflow-y-auto p-4 space-y-3 no-scrollbar relative">
+                      {unreadCount > 0 && (
+                        <div className="flex justify-end mb-4">
+                          <button onClick={markAllAsRead} className="text-xs font-bold text-lyloo-terracotta hover:text-lyloo-orange transition-colors flex items-center gap-1 bg-white dark:bg-stone-800 px-3 py-1.5 rounded-full shadow-sm">
+                            <CheckCircle size={14} /> Tout marquer comme lu
+                          </button>
+                        </div>
+                      )}
+
+                      {notifications.length === 0 ? (
+                        <div className="h-full flex flex-col items-center justify-center text-stone-400 opacity-70">
+                          <BellRing size={48} className="mb-4 opacity-50" />
+                          <p className="font-medium">Aucune notification</p>
+                        </div>
+                      ) : (
+                        notifications.map(notif => (
+                          <div
+                            key={notif.id}
+                            onClick={() => markAsRead(notif.id)}
+                            className={`p-4 rounded-2xl flex gap-4 cursor-pointer transition-all duration-300 ${notif.read ? 'bg-white/40 dark:bg-stone-800/40 opacity-60' : 'bg-white dark:bg-stone-800 shadow-md border border-lyloo-vertEau/40 hover:scale-[1.02]'}`}
+                          >
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 shadow-inner ${notif.type === 'community' ? 'bg-lyloo-terracotta/20 text-lyloo-terracotta' : 'bg-lyloo-vertEau/30 text-lyloo-anthracite'}`}>
+                              {notif.type === 'community' ? <MessageSquare size={18} /> : <BellRing size={18} />}
                             </div>
-                        </div>
-                    )}
+                            <div className="flex-1">
+                              <h4 className={`text-sm ${notif.read ? 'font-medium text-stone-500' : 'font-bold text-lyloo-anthracite dark:text-lyloo-beige'}`}>{notif.title || 'Lyloo'}</h4>
+                              <p className="text-xs text-stone-500 dark:text-stone-400 mt-1 leading-relaxed">{notif.message}</p>
+                            </div>
+                            {!notif.read && <div className="w-2 h-2 bg-lyloo-terracotta rounded-full mt-2 shadow-sm animate-pulse"></div>}
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {rightAction}
+
+            {onMenuClick && (
+              <Tooltip content="Mon Profil" position="bottom" align="end">
+                <button onClick={onMenuClick} className="w-10 h-10 bg-white/30 backdrop-blur-sm rounded-full hover:bg-white/50 hover:scale-110 transition-all shadow-sm overflow-hidden flex items-center justify-center p-0 border-2 border-transparent hover:border-white">
+                  {user?.avatar_url ? (
+                    <img src={user.avatar_url} alt="Profil" className="w-full h-full object-cover" />
+                  ) : (
+                    <User size={20} className="text-lyloo-anthracite dark:text-lyloo-beige" />
+                  )}
+                </button>
+              </Tooltip>
+            )}
+          </div>
+        </div>
+
+        {/* Bottom Row: Conditional Layout - Hides on scroll */}
+        <div
+          className={`absolute bottom-0 w-full left-0 right-0 h-32 md:h-40 pointer-events-none flex items-center justify-center transition-all duration-500 origin-bottom ${isScrolled ? 'opacity-0 scale-y-0' : 'opacity-100 scale-y-100'}`}
+        >
+          <div className="relative w-full max-w-5xl mx-auto px-4">
+
+            {/* Layout WITH Icon (Standard Pages) */}
+            {Icon ? (
+              <div className="flex w-full items-center">
+                {/* Left Column: 2/5 width, right justified */}
+                <div className="w-[40%] flex justify-end pr-4 md:pr-8">
+                  <div className="text-lyloo-anthracite dark:text-lyloo-beige drop-shadow-sm opacity-90">
+                    <Icon size={90} color="currentColor" />
+                  </div>
                 </div>
 
-                {rightAction}
-                
-                {onMenuClick && (
-                  <Tooltip content="Mon Profil" position="bottom" align="end">
-                    <button onClick={onMenuClick} className="p-2.5 bg-white/30 backdrop-blur-sm rounded-full hover:bg-white/50 hover:scale-110 transition-all text-lyloo-anthracite dark:text-lyloo-beige shadow-sm">
-                      <User size={22} />
-                    </button>
-                  </Tooltip>
-                )}
-             </div>
-         </div>
+                {/* Right Column: 3/5 width, left justified */}
+                <div className="w-[60%] flex flex-col items-start text-left">
+                  {title && <h1 className="text-3xl sm:text-4xl md:text-6xl font-secondary font-bold text-lyloo-anthracite dark:text-lyloo-beige leading-none drop-shadow-sm">{title}</h1>}
+                  {subtitle && (
+                    <p className={`font-playful text-lyloo-anthracite dark:text-lyloo-beige mt-1 whitespace-nowrap overflow-hidden text-ellipsis w-full ${subtitleClassName}`}>
+                      {subtitle}
+                    </p>
+                  )}
+                </div>
+              </div>
+            ) : (
+              /* Layout WITHOUT Icon (Home Page) - Centered */
+              <div className="w-full flex flex-col items-center text-center pb-4">
+                {title && <h1 className="text-4xl md:text-6xl font-secondary font-bold text-lyloo-anthracite dark:text-lyloo-beige leading-none drop-shadow-sm">{title}</h1>}
+                {subtitle && <p className="text-2xl md:text-3xl font-playful italic text-lyloo-anthracite/80 dark:text-lyloo-beige/80 mt-1 tracking-wide">{subtitle}</p>}
+              </div>
+            )}
 
-         {/* Bottom Row: Conditional Layout - Hides on scroll */}
-         <div 
-            className={`absolute bottom-0 w-full left-0 right-0 h-32 md:h-40 pointer-events-none flex items-center justify-center transition-all duration-500 origin-bottom ${isScrolled ? 'opacity-0 scale-y-0' : 'opacity-100 scale-y-100'}`}
-         >
-             <div className="relative w-full max-w-5xl mx-auto px-4">
-                 
-                 {/* Layout WITH Icon (Standard Pages) */}
-                 {Icon ? (
-                    <div className="flex w-full items-center">
-                        {/* Left Column: 2/5 width, right justified */}
-                        <div className="w-[40%] flex justify-end pr-4 md:pr-8">
-                             <div className="text-lyloo-anthracite dark:text-lyloo-beige drop-shadow-sm opacity-90">
-                                 <Icon size={90} color="currentColor" />
-                             </div>
-                        </div>
-
-                        {/* Right Column: 3/5 width, left justified */}
-                        <div className="w-[60%] flex flex-col items-start text-left">
-                            {title && <h1 className="text-3xl sm:text-4xl md:text-6xl font-secondary font-bold text-lyloo-anthracite dark:text-lyloo-beige leading-none drop-shadow-sm">{title}</h1>}
-                            {subtitle && (
-                                <p className={`font-playful text-lyloo-anthracite dark:text-lyloo-beige mt-1 whitespace-nowrap overflow-hidden text-ellipsis w-full ${subtitleClassName}`}>
-                                    {subtitle}
-                                </p>
-                            )}
-                        </div>
-                    </div>
-                 ) : (
-                    /* Layout WITHOUT Icon (Home Page) - Centered */
-                    <div className="w-full flex flex-col items-center text-center pb-4">
-                        {title && <h1 className="text-4xl md:text-6xl font-secondary font-bold text-lyloo-anthracite dark:text-lyloo-beige leading-none drop-shadow-sm">{title}</h1>}
-                        {subtitle && <p className="text-2xl md:text-3xl font-playful italic text-lyloo-anthracite/80 dark:text-lyloo-beige/80 mt-1 tracking-wide">{subtitle}</p>}
-                    </div>
-                 )}
-
-             </div>
-         </div>
-       </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
@@ -551,25 +556,25 @@ export const WellnessCardImage: React.FC<{
   return (
     <div className={`relative overflow-hidden bg-stone-100 group ${className}`}>
       {hasImage && !error ? (
-        <img 
-          src={src} 
-          alt={alt} 
-          className="w-full h-full object-cover relative z-0 transition-transform duration-700 ease-in-out group-hover:scale-105" 
+        <img
+          src={src}
+          alt={alt}
+          className="w-full h-full object-cover relative z-0 transition-transform duration-700 ease-in-out group-hover:scale-105"
           onError={() => setError(true)}
         />
       ) : (
         <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-lyloo-beige to-white p-4 text-center relative z-0">
-           <div className="opacity-20 flex items-center justify-center transform scale-150">
-             <LylooIcon className="w-24 h-24 text-lyloo-anthracite" />
-           </div>
+          <div className="opacity-20 flex items-center justify-center transform scale-150">
+            <LylooIcon className="w-24 h-24 text-lyloo-anthracite" />
+          </div>
         </div>
       )}
-      
+
       {/* Subtle Overlay on hover */}
       <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300 pointer-events-none z-10" />
 
       <div className="absolute inset-0 z-10 pointer-events-none flex items-center justify-center opacity-25">
-         <LylooIcon className="w-1/2 h-1/2 text-white drop-shadow-md" />
+        <LylooIcon className="w-1/2 h-1/2 text-white drop-shadow-md" />
       </div>
     </div>
   );

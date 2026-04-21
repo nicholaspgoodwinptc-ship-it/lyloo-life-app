@@ -34,21 +34,24 @@ const Community: React.FC = () => {
         if (!newPostContent.trim() || !user) return;
 
         setIsPosting(true);
+        
+        const authorName = user.first_name?.trim() || 'Moi';
+        
         await MockService.addPost({
             content: newPostContent,
-            type: 'message'
+            type: 'message',
+            author: authorName
         });
+        
         setNewPostContent('');
         setIsPosting(false);
         loadData();
     };
 
     const handleReaction = async (postId: string, reaction: string) => {
-        // 1. Find the current post BEFORE updating state
         const post = posts.find(p => p.id === postId);
         if (!post) return;
 
-        // 2. Calculate the new reaction counts
         const currentCount = post.reactions ? post.reactions[reaction] || 0 : 0;
         const isRemoving = post.userReaction === reaction;
 
@@ -62,7 +65,6 @@ const Community: React.FC = () => {
             newReactions[reaction] = currentCount + 1;
         }
 
-        // 3. Instantly update the UI so it feels fast
         setPosts(prev => prev.map(p => {
             if (p.id === postId) {
                 return {
@@ -75,7 +77,6 @@ const Community: React.FC = () => {
             return p;
         }));
 
-        // 4. Save the calculated counts to the database!
         await MockService.reactToPost(postId, newReactions);
     };
 
@@ -122,8 +123,12 @@ const Community: React.FC = () => {
                         {/* New Post Input */}
                         <Card className="p-4 rounded-[32px]">
                             <form onSubmit={handlePost} className="flex gap-4 items-start">
-                                <div className="w-10 h-10 rounded-full bg-lyloo-vertEau flex items-center justify-center font-bold text-lyloo-anthracite flex-shrink-0">
-                                    {user?.first_name?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase() || 'U'}
+                                <div className="w-10 h-10 rounded-full bg-lyloo-vertEau flex items-center justify-center font-bold text-lyloo-anthracite flex-shrink-0 overflow-hidden shadow-inner">
+                                    {user?.avatar_url ? (
+                                        <img src={user.avatar_url} alt="Mon Avatar" className="w-full h-full object-cover" />
+                                    ) : (
+                                        user?.first_name?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase() || 'U'
+                                    )}
                                 </div>
                                 <div className="flex-1">
                                     <textarea
@@ -143,48 +148,70 @@ const Community: React.FC = () => {
 
                         {/* Posts List */}
                         <div className="space-y-4">
-                            {posts.map(post => (
-                                <Card key={post.id} className="p-5 rounded-[28px]">
-                                    <div className="flex justify-between items-start mb-3">
-                                        <div className="flex items-center gap-3">
-                                            <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm ${post.type === 'conseil' ? 'bg-lyloo-dore text-lyloo-anthracite' : post.type === 'challenge' ? 'bg-lyloo-terracotta text-white' : 'bg-stone-200 text-stone-600'}`}>
-                                                {post.type === 'conseil' ? <Lightbulb size={20} /> : post.type === 'challenge' ? <Flame size={20} /> : post.author.charAt(0)}
-                                            </div>
-                                            <div>
-                                                <h4 className="font-bold text-lyloo-anthracite dark:text-lyloo-beige">{post.author}</h4>
-                                                <p className="text-xs text-stone-400">{new Date(post.date).toLocaleDateString()} • {post.type === 'conseil' ? 'Conseil' : post.type === 'challenge' ? 'Défi' : 'Message'}</p>
+                            {posts.map(post => {
+                                // THE FIX: A bulletproof check to see if this post belongs to you
+                                const myName = user?.first_name?.trim();
+                                const isMyPost = 
+                                    (myName && post.author === myName) || 
+                                    post.author === 'Moi' || 
+                                    post.author === 'Vous' || 
+                                    post.author === 'Lyloo' || 
+                                    post.author === 'Anonyme' ||
+                                    post.author === user?.email;
+
+                                return (
+                                    <Card key={post.id} className="p-5 rounded-[28px]">
+                                        <div className="flex justify-between items-start mb-3">
+                                            <div className="flex items-center gap-3">
+                                                <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm overflow-hidden flex-shrink-0 ${post.type === 'conseil' ? 'bg-lyloo-dore text-lyloo-anthracite' : post.type === 'challenge' ? 'bg-lyloo-terracotta text-white' : 'bg-stone-200 text-stone-600'}`}>
+                                                    {post.type === 'conseil' ? (
+                                                        <Lightbulb size={20} />
+                                                    ) : post.type === 'challenge' ? (
+                                                        <Flame size={20} />
+                                                    ) : (isMyPost && user?.avatar_url) ? (
+                                                        <img src={user.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
+                                                    ) : (
+                                                        post.author.charAt(0).toUpperCase()
+                                                    )}
+                                                </div>
+                                                <div>
+                                                    <h4 className="font-bold text-lyloo-anthracite dark:text-lyloo-beige">
+                                                        {isMyPost ? (user?.first_name || 'Moi') : post.author}
+                                                    </h4>
+                                                    <p className="text-xs text-stone-400">{new Date(post.date).toLocaleDateString()} • {post.type === 'conseil' ? 'Conseil' : post.type === 'challenge' ? 'Défi' : 'Message'}</p>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
 
-                                    <p className="text-stone-700 dark:text-stone-300 mb-4 leading-relaxed whitespace-pre-wrap">{post.content}</p>
+                                        <p className="text-stone-700 dark:text-stone-300 mb-4 leading-relaxed whitespace-pre-wrap">{post.content}</p>
 
-                                    <div className="flex items-center gap-4 pt-4 border-t border-stone-100 dark:border-stone-700">
-                                        {/* Reactions */}
-                                        <div className="flex gap-2">
-                                            {['❤️', '👏', '🔥'].map(emoji => (
-                                                <button
-                                                    key={emoji}
-                                                    onClick={() => handleReaction(post.id, emoji)}
-                                                    className={`px-2 py-1 rounded-full text-xs font-bold border transition-all flex items-center gap-1 ${post.userReaction === emoji ? 'bg-lyloo-vertEau/20 border-lyloo-vertEau text-lyloo-anthracite' : 'bg-transparent border-transparent hover:bg-stone-100 dark:hover:bg-stone-800'}`}
-                                                >
-                                                    <span>{emoji}</span>
-                                                    <span>{post.reactions ? post.reactions[emoji] || 0 : 0}</span>
-                                                </button>
-                                            ))}
+                                        <div className="flex items-center gap-4 pt-4 border-t border-stone-100 dark:border-stone-700">
+                                            {/* Reactions */}
+                                            <div className="flex gap-2">
+                                                {['❤️', '👏', '🔥'].map(emoji => (
+                                                    <button
+                                                        key={emoji}
+                                                        onClick={() => handleReaction(post.id, emoji)}
+                                                        className={`px-2 py-1 rounded-full text-xs font-bold border transition-all flex items-center gap-1 ${post.userReaction === emoji ? 'bg-lyloo-vertEau/20 border-lyloo-vertEau text-lyloo-anthracite' : 'bg-transparent border-transparent hover:bg-stone-100 dark:hover:bg-stone-800'}`}
+                                                    >
+                                                        <span>{emoji}</span>
+                                                        <span>{post.reactions ? post.reactions[emoji] || 0 : 0}</span>
+                                                    </button>
+                                                ))}
+                                            </div>
+
+                                            <div className="flex-1"></div>
+
+                                            <button className="flex items-center gap-1 text-xs font-bold text-stone-400 hover:text-lyloo-anthracite transition-colors">
+                                                <MessageCircle size={16} /> {post.comments?.length || 0}
+                                            </button>
+                                            <button className="flex items-center gap-1 text-xs font-bold text-stone-400 hover:text-lyloo-anthracite transition-colors">
+                                                <Share2 size={16} />
+                                            </button>
                                         </div>
-
-                                        <div className="flex-1"></div>
-
-                                        <button className="flex items-center gap-1 text-xs font-bold text-stone-400 hover:text-lyloo-anthracite transition-colors">
-                                            <MessageCircle size={16} /> {post.comments?.length || 0}
-                                        </button>
-                                        <button className="flex items-center gap-1 text-xs font-bold text-stone-400 hover:text-lyloo-anthracite transition-colors">
-                                            <Share2 size={16} />
-                                        </button>
-                                    </div>
-                                </Card>
-                            ))}
+                                    </Card>
+                                );
+                            })}
                         </div>
                     </div>
                 )}

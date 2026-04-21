@@ -2,19 +2,41 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/LayoutComponents';
-import { Moon, Sun, Smartphone, LogOut, ChevronRight, Info, User, Bell, X, Shield, Edit2, Save } from 'lucide-react';
+import { Moon, Sun, Smartphone, LogOut, ChevronRight, User, Bell, X, Shield, Edit2, Save, Camera, CheckCircle2 } from 'lucide-react';
+
+// 15 Curated Neutral Avatars (Friendly, non-human minimalist robots)
+const AVATAR_OPTIONS = [
+  "https://api.dicebear.com/7.x/bottts-neutral/svg?seed=Felix&backgroundColor=f5f2e6",
+  "https://api.dicebear.com/7.x/bottts-neutral/svg?seed=Aneka&backgroundColor=cce1b0",
+  "https://api.dicebear.com/7.x/bottts-neutral/svg?seed=Jasper&backgroundColor=a5cdbc",
+  "https://api.dicebear.com/7.x/bottts-neutral/svg?seed=Lola&backgroundColor=ec9b7b",
+  "https://api.dicebear.com/7.x/bottts-neutral/svg?seed=Oliver&backgroundColor=f5f2e6",
+  "https://api.dicebear.com/7.x/bottts-neutral/svg?seed=Sophie&backgroundColor=cce1b0",
+  "https://api.dicebear.com/7.x/bottts-neutral/svg?seed=Max&backgroundColor=a5cdbc",
+  "https://api.dicebear.com/7.x/bottts-neutral/svg?seed=Cleo&backgroundColor=ec9b7b",
+  "https://api.dicebear.com/7.x/bottts-neutral/svg?seed=Sam&backgroundColor=f5f2e6",
+  "https://api.dicebear.com/7.x/bottts-neutral/svg?seed=Mia&backgroundColor=cce1b0",
+  "https://api.dicebear.com/7.x/bottts-neutral/svg?seed=Leo&backgroundColor=a5cdbc",
+  "https://api.dicebear.com/7.x/bottts-neutral/svg?seed=Zoe&backgroundColor=ec9b7b",
+  "https://api.dicebear.com/7.x/bottts-neutral/svg?seed=Nala&backgroundColor=f5f2e6",
+  "https://api.dicebear.com/7.x/bottts-neutral/svg?seed=Oscar&backgroundColor=cce1b0",
+  "https://api.dicebear.com/7.x/bottts-neutral/svg?seed=Ruby&backgroundColor=a5cdbc"
+];
 
 const Profile: React.FC = () => {
   const { user, signOut, setTheme, updateProfile } = useAuth();
   const navigate = useNavigate();
 
-  // Nouveaux états pour le mode édition
+  // Name Editing State
   const [isEditing, setIsEditing] = useState(false);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [isSaving, setIsSaving] = useState(false);
 
-  // Initialisation des champs texte
+  // Avatar Editing State
+  const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
+  const [isSavingAvatar, setIsSavingAvatar] = useState(false);
+
   useEffect(() => {
     if (user) {
       setFirstName(user.first_name || '');
@@ -24,35 +46,89 @@ const Profile: React.FC = () => {
 
   if (!user) return null;
 
-  // Fonction de sauvegarde
-  const handleSave = async () => {
+  const handleSaveName = async () => {
     setIsSaving(true);
     await updateProfile({ first_name: firstName, last_name: lastName });
     setIsEditing(false);
     setIsSaving(false);
   };
 
+  const handleSaveAvatar = async (avatarUrl: string) => {
+    setIsSavingAvatar(true);
+    await updateProfile({ avatar_url: avatarUrl });
+    setIsAvatarModalOpen(false);
+    setIsSavingAvatar(false);
+  };
+
   return (
     <div className="min-h-screen bg-lyloo-beige dark:bg-lyloo-dark-bg pb-40">
-      <div className="bg-lyloo-vertEau p-6 pt-safe-top pb-12 rounded-b-[40px] mb-[-20px] relative z-10 transition-all">
+      
+      {/* --- AVATAR SELECTION MODAL --- */}
+      {isAvatarModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-4 sm:p-0">
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm animate-in fade-in" onClick={() => setIsAvatarModalOpen(false)}></div>
+          <div className="relative bg-white dark:bg-stone-800 w-full max-w-md rounded-[32px] sm:rounded-3xl shadow-2xl animate-in slide-in-from-bottom-10 sm:zoom-in-95 duration-300 overflow-hidden flex flex-col max-h-[85vh]">
+             <div className="p-6 border-b border-stone-100 dark:border-stone-700 flex justify-between items-center sticky top-0 bg-white/90 dark:bg-stone-800/90 backdrop-blur-md z-10">
+                 <h2 className="text-xl font-bold text-lyloo-anthracite dark:text-lyloo-beige">Choisir un avatar</h2>
+                 <button onClick={() => setIsAvatarModalOpen(false)} className="p-2 bg-stone-100 dark:bg-stone-700 rounded-full text-stone-500 hover:bg-stone-200 transition-colors">
+                     <X size={20} />
+                 </button>
+             </div>
+             
+             <div className="p-6 overflow-y-auto no-scrollbar">
+                <div className="grid grid-cols-3 gap-4">
+                   {AVATAR_OPTIONS.map((url, index) => (
+                      <button 
+                        key={index}
+                        onClick={() => handleSaveAvatar(url)}
+                        disabled={isSavingAvatar}
+                        className="relative aspect-square rounded-2xl overflow-hidden hover:scale-105 active:scale-95 transition-all shadow-sm hover:shadow-md border-2 border-transparent hover:border-lyloo-vertEau focus:border-lyloo-vertEau group"
+                      >
+                         <img src={url} alt={`Avatar option ${index + 1}`} className="w-full h-full object-cover" />
+                         
+                         {/* Show checkmark if it's the currently selected avatar */}
+                         {user.avatar_url === url && (
+                            <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+                               <CheckCircle2 size={32} className="text-white drop-shadow-md" />
+                            </div>
+                         )}
+                      </button>
+                   ))}
+                </div>
+             </div>
+          </div>
+        </div>
+      )}
+
+      {/* --- HEADER & PROFILE INFO --- */}
+      <div className="bg-lyloo-vertEau p-6 pt-safe-top pb-12 rounded-b-[40px] mb-[-20px] relative z-10 transition-all shadow-sm">
           <div className="flex items-center justify-between mb-6">
               <h1 className="text-xl font-bold text-lyloo-anthracite">Profil & Paramètres</h1>
-              <button onClick={() => navigate(-1)} className="p-2 bg-white/20 rounded-full text-lyloo-anthracite hover:bg-white/40 transition-colors">
+              <button onClick={() => navigate(-1)} className="p-2 bg-white/20 rounded-full text-lyloo-anthracite hover:bg-white/40 transition-colors shadow-sm">
                   <X size={24} />
               </button>
           </div>
           
-          <div className="flex items-center gap-4 relative">
-              {user.avatar_url ? (
-                  <img src={user.avatar_url} className="w-16 h-16 rounded-full border-4 border-white/30 object-cover" alt="Avatar" />
-              ) : (
-                  <div className="w-16 h-16 rounded-full border-4 border-white/30 bg-white/20 flex items-center justify-center text-lyloo-anthracite font-bold text-xl uppercase">
-                      {(user.first_name?.[0] || '')}{(user.last_name?.[0] || '?')}
+          <div className="flex items-center gap-5 relative">
+              {/* INTERACTIVE AVATAR BUTTON */}
+              <button 
+                onClick={() => setIsAvatarModalOpen(true)}
+                className="relative group w-20 h-20 rounded-full border-4 border-white/40 shadow-md transition-transform hover:scale-105 active:scale-95"
+              >
+                  {user.avatar_url ? (
+                      <img src={user.avatar_url} className="w-full h-full rounded-full object-cover" alt="Avatar" />
+                  ) : (
+                      <div className="w-full h-full rounded-full bg-white/20 flex items-center justify-center text-lyloo-anthracite font-bold text-2xl uppercase">
+                          {(user.first_name?.[0] || '')}{(user.last_name?.[0] || '?')}
+                      </div>
+                  )}
+                  {/* Edit Camera Icon Overlay */}
+                  <div className="absolute bottom-0 right-0 bg-lyloo-anthracite text-white p-1.5 rounded-full shadow-lg border-2 border-white group-hover:bg-lyloo-terracotta transition-colors">
+                      <Camera size={14} />
                   </div>
-              )}
+              </button>
               
               <div className="flex-1">
-                  {/* MODE ÉDITION VS MODE AFFICHAGE */}
                   {isEditing ? (
                       <div className="flex flex-col gap-2 animate-in fade-in zoom-in duration-300">
                           <input 
@@ -60,42 +136,41 @@ const Profile: React.FC = () => {
                               value={firstName} 
                               onChange={(e) => setFirstName(e.target.value)} 
                               placeholder="Prénom"
-                              className="px-3 py-1.5 rounded-lg border-none focus:ring-2 focus:ring-lyloo-anthracite bg-white/50 text-lyloo-anthracite font-bold placeholder:text-lyloo-anthracite/40 w-full"
+                              className="px-4 py-2 rounded-xl border-none focus:ring-2 focus:ring-lyloo-anthracite bg-white/60 text-lyloo-anthracite font-bold placeholder:text-lyloo-anthracite/40 w-full shadow-inner"
                           />
                           <input 
                               type="text" 
                               value={lastName} 
                               onChange={(e) => setLastName(e.target.value)} 
                               placeholder="Nom"
-                              className="px-3 py-1.5 rounded-lg border-none focus:ring-2 focus:ring-lyloo-anthracite bg-white/50 text-lyloo-anthracite font-bold placeholder:text-lyloo-anthracite/40 w-full"
+                              className="px-4 py-2 rounded-xl border-none focus:ring-2 focus:ring-lyloo-anthracite bg-white/60 text-lyloo-anthracite font-bold placeholder:text-lyloo-anthracite/40 w-full shadow-inner"
                           />
                       </div>
                   ) : (
                       <div>
-                          <h2 className="text-2xl font-bold text-lyloo-anthracite">
+                          <h2 className="text-2xl font-bold text-lyloo-anthracite drop-shadow-sm">
                               {user.first_name || 'Anonyme'} {user.last_name || ''}
                           </h2>
-                          <p className="text-lyloo-anthracite/70 text-sm">{user.email}</p>
+                          <p className="text-lyloo-anthracite/80 text-sm font-medium">{user.email}</p>
                       </div>
                   )}
               </div>
 
-              {/* BOUTON D'ÉDITION / SAUVEGARDE */}
               <div className="self-start">
                   {isEditing ? (
                       <button 
-                          onClick={handleSave} 
+                          onClick={handleSaveName} 
                           disabled={isSaving}
-                          className="bg-lyloo-anthracite text-white p-2.5 rounded-full shadow-md hover:scale-105 transition-transform disabled:opacity-50"
+                          className="bg-lyloo-anthracite text-white p-3 rounded-full shadow-lg hover:scale-105 transition-transform disabled:opacity-50"
                       >
-                          <Save size={18} />
+                          <Save size={20} />
                       </button>
                   ) : (
                       <button 
                           onClick={() => setIsEditing(true)} 
-                          className="bg-white/30 text-lyloo-anthracite p-2.5 rounded-full hover:bg-white/50 transition-colors"
+                          className="bg-white/40 text-lyloo-anthracite p-3 rounded-full shadow-sm hover:bg-white/60 transition-colors"
                       >
-                          <Edit2 size={18} />
+                          <Edit2 size={20} />
                       </button>
                   )}
               </div>
@@ -157,7 +232,7 @@ const Profile: React.FC = () => {
                </div>
           </div>
 
-          <Button onClick={signOut} variant="outline" className="w-full mt-8 border-red-200 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20">
+          <Button onClick={signOut} variant="outline" className="w-full mt-8 border-red-200 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 shadow-sm">
               <LogOut size={18} /> Se déconnecter
           </Button>
 
