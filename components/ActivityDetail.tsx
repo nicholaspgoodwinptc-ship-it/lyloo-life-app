@@ -46,7 +46,8 @@ export const ActivityDetail: React.FC<ActivityDetailProps> = ({ activity, onClos
             .filter(a => 
                 a.id !== activity.id && 
                 a.type === activity.type && 
-                (a.categorie === activity.categorie || a.tags.some(t => activity.tags.includes(t)))
+                // THE FIX: Added safe fallback arrays (|| []) to prevent crashes!
+                (a.categorie === activity.categorie || (a.tags || []).some(t => (activity.tags || []).includes(t)))
             )
             .slice(0, 5);
         setRelatedActivities(related);
@@ -83,15 +84,12 @@ export const ActivityDetail: React.FC<ActivityDetailProps> = ({ activity, onClos
     setIsActive(true);
   };
 
-  // === MISE À JOUR 1 : Arrêt prématuré de la session ===
   const stopSession = async () => {
     setIsActive(false);
     setSessionMode(false);
     
-    // Calcule le temps réellement passé (en minutes)
     const durationSpent = Math.round((activity.dureeMinutes * 60 - timeLeft) / 60);
     
-    // Sauvegarde en base de données avec le statut "interrompue"
     await MockService.saveSession({ 
         activityId: activity.id, 
         duration: durationSpent, 
@@ -101,10 +99,8 @@ export const ActivityDetail: React.FC<ActivityDetailProps> = ({ activity, onClos
     setTimeLeft(activity.dureeMinutes * 60);
   };
 
-  // === MISE À JOUR 2 : Bouton "Marquer comme terminé" ===
   const markAsComplete = async () => {
       setIsCompleted(true);
-      // Sauvegarde instantanée en base de données
       await MockService.saveSession({ 
           activityId: activity.id, 
           duration: activity.dureeMinutes, 
@@ -113,7 +109,6 @@ export const ActivityDetail: React.FC<ActivityDetailProps> = ({ activity, onClos
       setTimeout(() => setIsCompleted(false), 3000);
   };
 
-  // === MISE À JOUR 3 : Fin automatique du minuteur ===
   useEffect(() => {
     let interval: any = null;
     if (isActive && timeLeft > 0) {
@@ -121,12 +116,10 @@ export const ActivityDetail: React.FC<ActivityDetailProps> = ({ activity, onClos
         setTimeLeft(time => time - 1);
       }, 1000);
     } else if (isActive && timeLeft === 0) {
-      // Le minuteur est arrivé à 0 !
       setIsActive(false);
       setSessionMode(false);
-      setIsCompleted(true); // Déclenche les confettis
+      setIsCompleted(true); 
       
-      // Sauvegarde automatique
       MockService.saveSession({ 
           activityId: activity.id, 
           duration: activity.dureeMinutes, 

@@ -24,6 +24,27 @@ const URLS = {
     "https://docs.google.com/spreadsheets/d/e/2PACX-1vQH1LrtQULQ9FON_QKgG9tohAPpXunPNTBnawcxHAT8W_nUMXeUaagSWmD6fndtXu6Dk1zc54jNzo5J/pub?gid=129984928&single=true&output=csv",
 };
 
+// --- GOOGLE DRIVE IMAGE CONVERTER WITH TRACING ---
+const convertDriveImageLink = (url: string | undefined | null): string => {
+  if (!url) return "";
+
+  if (url.includes("drive.google.com/file/d/")) {
+    const match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+
+    if (match && match[1]) {
+      const driveId = match[1];
+
+      // HERE is the crucial $ that I kept forgetting!
+      const newUrl = `https://lh3.googleusercontent.com/d/${driveId}`;
+
+      return newUrl;
+    } else {
+      console.log(`[IMAGE TRACE ERROR] Could not extract ID from: ${url}`);
+    }
+  }
+  return url;
+};
+
 async function fetchAndParseCsvDynamic(url: string) {
   const response = await fetch(url);
   let text = await response.text();
@@ -86,7 +107,7 @@ serve(async (req) => {
       titre: p.titre,
       duree_minutes: parseInt(p.duree_minutes) || 0,
       video_url: p.video_url,
-      image_url: p.image_url || p.image,
+      image_url: convertDriveImageLink(p.image_url || p.image), // <-- Converted!
     }));
 
     const mentRecords = mental.map((m) => ({
@@ -100,7 +121,7 @@ serve(async (req) => {
       duree_minutes: parseInt(m.duree_minutes) || 0,
       format_media: m.format_media,
       media_url: m.media_url,
-      image_url: m.image_url || m.image,
+      image_url: convertDriveImageLink(m.image_url || m.image), // <-- Converted!
       attribut_special: m.attribut_special,
     }));
 
@@ -116,7 +137,7 @@ serve(async (req) => {
       instructions: r.instructions,
       is_nouveaute: r.is_nouveaute?.toLowerCase() === "vrai" ||
         r.is_nouveaute?.toLowerCase() === "true",
-      image_url: r.image_url || r.image,
+      image_url: convertDriveImageLink(r.image_url || r.image), // <-- Converted!
     }));
 
     const prodRecords = produits.map((p) => ({
@@ -125,7 +146,7 @@ serve(async (req) => {
       price: parseFloat(p.price || p.prix) || 0,
       category: p.category || p.categorie,
       description: p.description,
-      image_url: p.image_url || p.image,
+      image_url: convertDriveImageLink(p.image_url || p.image), // <-- Converted!
     }));
 
     const chalRecords = challenges.map((c) => ({
@@ -137,7 +158,7 @@ serve(async (req) => {
       is_joined: c.is_joined?.toLowerCase() === "true" ||
         c.isjoined?.toLowerCase() === "true",
       participants: parseInt(c.participants) || 0,
-      image_url: c.image_url || c.image,
+      image_url: convertDriveImageLink(c.image_url || c.image), // <-- Converted!
     }));
 
     const quoRecords = quotes.map((q) => ({
